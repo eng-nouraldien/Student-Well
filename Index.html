@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>StudentWell — متابعة الصحة النفسية</title>
+
+  <!-- رابط ملف الستايل الموحد (ضع styles.css في نفس الفولدر) -->
+  <link rel="stylesheet" href="styles.css">
+
+  <!-- Page-specific small tweaks (images sizing, header of services) -->
+  <style>
+    :root{
+      --card: #ffffff;
+      --muted: #6b7280;
+      --accent: #2f6fa8;
+    }
+    .hero-box {
+      background: var(--card);
+      border-radius: 14px;
+      padding: 20px 22px;
+      box-shadow: 0 10px 28px rgba(19,38,71,0.04);
+      text-align: center;
+      margin: 8px auto;
+      max-width: 1100px;
+    }
+    .hero-box h1 { color: var(--accent); font-size: 28px; margin-bottom:6px; }
+    .hero-box p { color: var(--muted); max-width:760px; margin:0 auto; line-height:1.6; }
+
+    /* services header */
+    .services-header { text-align:center; margin: 18px auto 8px; max-width:1100px; }
+    .services-header h2 { font-size:20px; color: #1f4f73; margin-bottom:6px; font-weight:800; }
+    .services-header .subtitle { color: var(--muted); font-size:14px; margin:0; }
+
+    /* ensure grid/cards stretch and images behave */
+    main.wrap { min-height: calc(100vh - 160px); display:flex; flex-direction:column; }
+    .grid.services, .services {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 18px;
+      align-items: stretch;
+      grid-auto-rows: 1fr;
+    }
+    .card, .service {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 100%;
+      padding: 18px;
+      box-sizing: border-box;
+    }
+    .service-media img {
+      width: 100%;
+      height: 110px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 12px;
+    }
+    .service-body { flex: 1 1 auto; }
+    .service-action { margin-top: 10px; text-align: center; }
+    .services-strip {
+      margin: 18px auto 10px;
+      max-width: 1100px;
+      background: linear-gradient(90deg, rgba(47,111,168,0.06), rgba(74,163,216,0.04));
+      padding: 12px 18px;
+      border-radius: 10px;
+      text-align: center;
+      color: #1f4f73;
+      font-weight: 700;
+      box-shadow: 0 6px 18px rgba(6,30,50,0.04);
+    }
+
+    @media (max-width:900px){
+      .service-media img { height: 90px; }
+      main.wrap { min-height: auto; }
+      .hero-box { margin: 10px; }
+      .services-header { padding: 0 12px; }
+    }
+  </style>
+</head>
+<body>
+  <!-- site-nav.js will inject the topbar/footer; keep body content clean -->
+  <main class="wrap">
+    <!-- Hero -->
+    <section style="padding-top:18px;text-align:center">
+      <div class="hero-box" role="banner" aria-label="StudentWell hero">
+        <h1>StudentWell</h1>
+        <p>موقع يساعد الطلاب على متابعة حالتهم النفسية وفهمها، وتقليل التوتر عبر استبيانات يومية، نصائح عملية، وخطة دعم بسيطة مبنية على عادات يومية.</p>
+      </div>
+    </section>
+
+    <!-- Services header (above the cards) -->
+    <section class="services-header" aria-label="خدمات الموقع">
+      <h2>خدمات الموقع</h2>
+      <p class="subtitle">الاستبيان — خطط ونصائح — تذكيرات وأهداف — مكتبة موارد — نظام ذكي — تواصل</p>
+    </section>
+
+    <!-- Services grid -->
+    <section aria-labelledby="servicesTitle" style="margin-top:12px; width:100%">
+      <h2 id="servicesTitle" style="display:none">الخدمات</h2>
+
+      <div class="grid services" role="list">
+        <!-- Service: Survey (image fixed) -->
+        <article class="card service" id="svc-survey" role="listitem">
+          <div class="service-media">
+            <!-- reliable survey-ish image (will display) -->
+            <img src="images/survey.jpg" alt="استبيان" loading ="lazy">
+          </div>
+          <div class="service-body">
+            <h3>استبيان تقييم الحالة النفسية</h3>
+            <p>استبيان سهل وسريع يقيس التوتر، النوم، المزاج، والتركيز — تحليل فوري ونتيجة من 0-20.</p>
+          </div>
+          <div class="service-action">
+            <a class="btn" href="survey.html">ادخل الخدمة</a>
+          </div>
+        </article>
+
+        <!-- Service: Plans -->
+        <article class="card service" id="svc-plans" role="listitem">
+          <div class="service-media">
+            <img src="https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=1200&q=80" alt="خطط ونصائح">
+          </div>
+          <div class="service-body">
+            <h3>خطط ونصائح فورية وبسيطة</h3>
+            <p>تمارين تنفس، خطوات قصيرة لإعادة التركيز، وجداول بسيطة للقيلولة والنوم لتحسين الرفاهية.</p>
+          </div>
+          <div class="service-action">
+            <a class="btn" href="plans.html">ادخل الخدمة</a>
+          </div>
+        </article>
+
+        <!-- Service: Goals -->
+        <article class="card service" id="svc-goals" role="listitem">
+          <div class="service-media">
+            <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=1200&q=80" alt="اهداف وتذكيرات">
+          </div>
+          <div class="service-body">
+            <h3>تذكيرات وأهداف</h3>
+            <p>حدد أهداف صغيرة يومية—تذكيرات للراحة، تمارين قصيرة، ومتابعة تقدمك بخطة بسيطة.</p>
+          </div>
+          <div class="service-action">
+            <a class="btn" href="goals.html">ادخل الخدمة</a>
+          </div>
+        </article>
+
+        <!-- Service: Library -->
+        <article class="card service" id="svc-library" role="listitem">
+          <div class="service-media">
+            <img src="https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=1200&q=80" alt="مكتبة موارد">
+          </div>
+          <div class="service-body">
+            <h3>مكتبة موارد</h3>
+            <p>مقالات قصيرة، فيديوهات مرشدة، وروابط لمصادر موثوقة لجلسات استرخاء ومقالات تعليمية.</p>
+          </div>
+          <div class="service-action">
+            <a class="btn" href="library.html">افتح المكتبة</a>
+          </div>
+        </article>
+
+        <!-- Service: AI (image related to AI/tech) -->
+        <article class="card service" id="svc-ai" role="listitem">
+          <div class="service-media">
+            <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&q=80" alt="نظام ذكي">
+          </div>
+          <div class="service-body">
+            <h3>نظام ذكاء اصطناعي بسيط</h3>
+            <p>اقتراحات مبدئية مخصصة لكل مستخدم — توصيات يومية بناءً على إجابات الاستبيان.</p>
+          </div>
+          <div class="service-action">
+            <a class="btn" href="ai.html">جرب النظام</a>
+          </div>
+        </article>
+
+        <!-- Service: Contact -->
+        <article class="card service" id="svc-contact" role="listitem">
+          <div class="service-media">
+            <img src="images/contact.jpg" alt="تواصل">
+          </div>
+          <div class="service-body">
+            <h3>تواصل معنا</h3>
+            <p>لو عندك فكرة جديدة أو محتاج مساعدة، راسل مطوري الموقع.</p>
+          </div>
+          <div class="service-action">
+            <a class="btn" href="contact.html">تواصل</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- Tips -->
+    <section class="grid" style="margin-top:22px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px">
+      <div class="card tip-card">
+        <h4>نصيحة سريعة</h4>
+        <p>ابدأ يومك بجلسة تنفس 5 دقائق قبل المذاكرة.</p>
+      </div>
+      <div class="card tip-card">
+        <h4>نصيحة تانية</h4>
+        <p>قسم مهامك لفترات 25 دقيقة مع راحة 5 دقائق (تقنية بومودورو).</p>
+      </div>
+      <div class="card tip-card">
+        <h4>نصيحة للمساء</h4>
+        <p>ابتعد عن الشاشات قبل النوم بنص ساعة وحاول تسجل 3 حاجات إيجابية حصلت النهاردة.</p>
+      </div>
+    </section>
+
+    <!-- services strip (above the footer) -->
+    <div class="services-strip" role="region" aria-label="خدمات الموقع">
+    </div>
+
+    <!-- page credits aligned with main content -->
+    <div style="max-width:1100px;margin:10px auto 6px;text-align:center;color:var(--muted)">
+      <small>Developed by : Eng Nour Aldien , Eng Mickel Ayman — © StudentWell</small>
+    </div>
+  </main>
+
+  <!-- SCRIPTS -->
+  <script>
+    // make whole card clickable (but allow normal link clicks on anchors)
+    document.addEventListener('DOMContentLoaded', ()=>{
+      document.querySelectorAll('.card.service').forEach(card=>{
+        const link = card.querySelector('.service-action a');
+        if(!link) return;
+        card.style.cursor = 'pointer';
+        card.addEventListener('click', (e)=>{
+          if(e.target.closest('a')) return; // clicked an actual link — let it
+          window.location.href = link.getAttribute('href');
+        });
+      });
+    });
+  </script>
+
+  <!-- site-nav should be last before extra layout scripts -->
+  <script src="site-nav.js"></script>
+
+  <!-- nav-scroll: optional (adds .scrolled to .sw-topbar on scroll) -->
+  <script src="nav-scroll.js"></script>
+
+  <!-- adjust main height dynamically based on header/footer heights -->
+  <script>
+    function adjustMainHeight(){
+      const main = document.querySelector('main.wrap') || document.querySelector('main');
+      if(!main) return;
+      const header = document.querySelector('.sw-topbar');
+      const footer = document.querySelector('.sw-footer');
+      const headerH = header ? header.getBoundingClientRect().height : 80;
+      const footerH = footer ? footer.getBoundingClientRect().height : 70;
+      const extra = 40;
+      main.style.minHeight = `calc(100vh - ${headerH + footerH + extra}px)`;
+    }
+    window.addEventListener('load', adjustMainHeight);
+    window.addEventListener('resize', adjustMainHeight);
+    setTimeout(adjustMainHeight, 600); // in case nav injects late
+  </script>
+</body>
+</html>
+

@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <link rel="stylesheet" href="styles.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>StudentWell — خطط ونصايح فورية وبسيطة</title>
+  <style>
+    :root{
+      --bg:#f3f7fb;
+      --card:#ffffff;
+      --accent:#2f6fa8;
+      --accent-2:#4aa3d8;
+      --muted:#5f6871;
+      --success:#16a34a;
+      --danger:#dc2626;
+      font-family: 'Segoe UI', Tahoma, system-ui, 'Noto Kufi Arabic', Arial, sans-serif;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:linear-gradient(180deg,var(--bg),#eef6fb);color:#0f172a}
+    header{padding:18px;text-align:center}
+    .brand{display:inline-block;background:var(--card);padding:12px 18px;border-radius:12px;box-shadow:0 8px 24px rgba(19,38,71,0.06)}
+    .brand h1{margin:0;color:var(--accent)}
+    .lead{color:var(--muted);margin-top:6px}
+
+    .container{max-width:1100px;margin:20px auto;padding:0 16px}
+    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+    .card{background:var(--card);padding:16px;border-radius:12px;box-shadow:0 10px 30px rgba(19,38,71,0.05);display:flex;flex-direction:column;gap:12px}
+    .card h3{margin:0;color:var(--accent)}
+    .card p{margin:0;color:var(--muted);font-size:14px}
+
+    .actions{display:flex;gap:8px;flex-wrap:wrap}
+    .btn{padding:8px 12px;border-radius:10px;border:0;cursor:pointer;font-weight:600}
+    .btn.primary{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white}
+    .btn.ghost{background:transparent;border:1px solid rgba(47,111,168,0.12);color:var(--accent)}
+    .btn.small{padding:6px 8px;font-size:13px}
+
+    /* breathing widget */
+    .breath-widget{display:flex;flex-direction:column;align-items:center;gap:10px;padding:12px;border-radius:10px;background:linear-gradient(180deg,#fff,#f7fbff);text-align:center}
+    .circle{width:160px;height:160px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,#e6f2ff,#d7eefc);transition:transform 1s ease;box-shadow:0 8px 18px rgba(47,111,168,0.08)}
+    .breath-text{font-weight:700;color:var(--accent)}
+    .timer{font-size:22px;font-weight:800;color:var(--accent)}
+
+    /* tips list */
+    .tips{margin-top:18px;display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+    .tip{background:linear-gradient(180deg,#fff,#fcfeff);padding:12px;border-radius:10px;box-shadow:0 6px 18px rgba(19,38,71,0.04)}
+    .tip h4{margin:0 0 6px;color:var(--accent)}
+    .tip p{margin:0;color:var(--muted);font-size:14px}
+
+    /* favorites */
+    .fav-list{margin-top:8px;padding:10px;border-radius:8px;background:#fff;min-height:40px}
+
+    /* footer nav */
+    .nav-row{display:flex;justify-content:space-between;align-items:center;margin-top:16px;gap:12px}
+    .nav-row a{color:var(--accent);text-decoration:none;font-weight:600}
+
+    @media (max-width:900px){
+      .grid{grid-template-columns:1fr}
+      .tips{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand" role="banner">
+      <h1>خطط ونصايح فورية — StudentWell</h1>
+      <div class="lead">اختيارات بسيطة وسريعة تقدر تبدأ بيها خلال أقل من 10 دقائق.</div>
+    </div>
+  </header>
+
+  <main class="container" role="main">
+    <section aria-labelledby="plansTitle">
+      <h2 id="plansTitle" style="display:none">خطط ونصايح فورية</h2>
+
+      <div class="grid">
+        <!-- Breathing exercise card -->
+        <article class="card" id="card-breath">
+          <div>
+            <h3>تمرين تنفس موجه (4-4-4)</h3>
+            <p>جلسة قصيرة مكونة من 3 دورات (تقترح) — شهيق 4 ث، حبس 4 ث، زفير 4 ث. مناسبة لخفض التوتر السريع.</p>
+          </div>
+
+          <div class="breath-widget" aria-live="polite">
+            <div class="circle" id="breathCircle" aria-hidden></div>
+            <div class="breath-text" id="breathPhase">جاهز</div>
+            <div class="timer" id="breathCounter">00</div>
+
+            <div class="actions">
+              <button class="btn primary" id="startBreath">ابدأ التمرين</button>
+              <button class="btn ghost" id="saveBreath">حفظ كخطة مفضلة</button>
+            </div>
+          </div>
+        </article>
+
+        <!-- Pomodoro short card -->
+        <article class="card" id="card-pomo">
+          <div>
+            <h3>جلسة بومودورو مصغرة — 25/5</h3>
+            <p>وقت مركّز 25 دقيقة ثم راحة 5 دقائق. طريقة مثبتة لزيادة التركيز وتقليل إرهاق المهام الطويلة.</p>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div style="display:flex;align-items:center;gap:12px">
+              <div style="font-weight:800;font-size:20px" id="pomoClock">25:00</div>
+              <div style="color:var(--muted)">حالة: <span id="pomoState">مستعد</span></div>
+            </div>
+            <div class="actions">
+              <button class="btn primary" id="startPomo">ابدأ</button>
+              <button class="btn ghost" id="stopPomo">إيقاف</button>
+              <button class="btn small ghost" id="savePomo">حفظ كمفضل</button>
+            </div>
+            <div style="font-size:13px;color:var(--muted)">نصيحة: قبل البدء اغلق الإشعارات لمدة 30 دقيقة لزيادة الفاعلية.</div>
+          </div>
+        </article>
+
+        <!-- Micro-break card -->
+        <article class="card" id="card-break">
+          <div>
+            <h3>استراحة مرشدة — 5 دقائق</h3>
+            <p>سلسلة خطوات بسيطة: قف، اشرب ماء، تنفس، وتمدد خفيف. مناسب بعد 45 دقيقة من الجلوس.</p>
+          </div>
+
+          <div>
+            <div style="margin-bottom:8px;color:var(--muted)">ابدأ مؤقت 5 دقائق لطيفة</div>
+            <div class="actions">
+              <button class="btn primary" id="startBreak">ابدأ الاستراحة</button>
+              <button class="btn ghost" id="saveBreak">حفظ كمفضل</button>
+            </div>
+          </div>
+        </article>
+
+        <!-- Sleep hygiene card -->
+        <article class="card" id="card-sleep">
+          <div>
+            <h3>خطة نوم بسيطة</h3>
+            <p>روتين ساعة قبل النوم: قلة شاشات، إضاءة منخفضة، تسجيل ثلاث نقاط إيجابية قبل النوم.</p>
+          </div>
+
+          <div>
+            <div style="color:var(--muted);margin-bottom:8px">أقترح تذكير يومي قبل النوم</div>
+            <div class="actions">
+              <button class="btn primary" id="setSleepReminder">اضبط تذكير</button>
+              <button class="btn ghost" id="saveSleep">حفظ كمفضل</button>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <!-- Favorites & quick tips -->
+      <section style="margin-top:18px">
+        <div class="card">
+          <h3>المفضلات لديك</h3>
+          <div class="fav-list" id="favList">لا توجد مفضلات بعد — اضغط \"حفظ\" على أي خطة لإضافتها هنا.</div>
+          <div style="margin-top:10px">
+            <button class="btn ghost" id="clearFavs">مسح المفضلات</button>
+          </div>
+        </div>
+
+        <div class="tips" style="margin-top:12px">
+          <div class="tip">
+            <h4>نصيحة سريعة</h4>
+            <p>ابدأ يومك بمياه و٣ دقائق تنفس — ده بيفرق كتير في التركيز.</p>
+          </div>
+          <div class="tip">
+            <h4>نصيحة للمذاكرة</h4>
+            <p>استخدم تقنية بومودورو: 25 دقيقة تركيز، 5 راحة. كرر 4 مرات وخد راحة أطول.</p>
+          </div>
+          <div class="tip">
+            <h4>نصيحة للنوم</h4>
+            <p>ثبّت مواعيد النوم والاستيقاظ حتي في أيام الراحة — الجسم يحب الروتين.</p>
+          </div>
+        </div>
+      </section>
+
+      <div class="nav-row" style="margin-top:18px">
+        <a href="index.html">← العودة للرئيسية</a>
+        <div style="text-align:center;color:var(--muted)">تقدر ترجع كمان لـ <a href="survey.html">الاستبيان</a></div>
+        <a href="contact.html">صفحة التواصل →</a>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // ---- helpers ----
+    const saveFavorite = (id, meta) => {
+      const favs = JSON.parse(localStorage.getItem('studentwell_favs') || '[]');
+      // prevent duplicates by id
+      if(!favs.find(f=>f.id === id)) {
+        favs.push({id, ...meta});
+        localStorage.setItem('studentwell_favs', JSON.stringify(favs));
+        renderFavs();
+        alert('تم حفظ الخطة كمفضلة.');
+      } else alert('الخطة موجودة بالفعل في المفضلات.');
+    };
+    const removeAllFavs = () => { localStorage.removeItem('studentwell_favs'); renderFavs(); };
+
+    const renderFavs = () => {
+      const list = document.getElementById('favList');
+      const favs = JSON.parse(localStorage.getItem('studentwell_favs') || '[]');
+      if(favs.length === 0) {
+        list.innerHTML = 'لا توجد مفضلات بعد — اضغط "حفظ" على أي خطة لإضافتها هنا.';
+        return;
+      }
+      list.innerHTML = favs.map(f => `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #f0f5fb">
+        <div style="font-weight:700;color:var(--accent)">${f.title}</div>
+        <div style="font-size:13px;color:var(--muted)"><button class="btn small ghost" data-remove="${f.id}">إزالة</button></div>
+      </div>`).join('');
+      // attach remove handlers
+      list.querySelectorAll('[data-remove]').forEach(b=>{
+        b.addEventListener('click', ()=> {
+          const id = b.getAttribute('data-remove');
+          const newFavs = JSON.parse(localStorage.getItem('studentwell_favs') || '[]').filter(x=>x.id !== id);
+          localStorage.setItem('studentwell_favs', JSON.stringify(newFavs));
+          renderFavs();
+        });
+      });
+    };
+
+    document.getElementById('saveBreath').addEventListener('click', ()=> saveFavorite('breath', {title:'تمرين تنفس 4-4-4'}));
+    document.getElementById('savePomo').addEventListener('click', ()=> saveFavorite('pomo', {title:'جلسة بومودورو 25/5'}));
+    document.getElementById('saveBreak').addEventListener('click', ()=> saveFavorite('break', {title:'استراحة 5 دقائق'}));
+    document.getElementById('saveSleep').addEventListener('click', ()=> saveFavorite('sleep', {title:'خطة نوم بسيطة'}));
+    document.getElementById('clearFavs').addEventListener('click', ()=> {
+      if(confirm('مسح كل المفضلات؟')) removeAllFavs();
+    });
+
+    // Breathing exercise logic (simple)
+    (function(){
+      const circle = document.getElementById('breathCircle');
+      const phaseText = document.getElementById('breathPhase');
+      const counter = document.getElementById('breathCounter');
+      const btn = document.getElementById('startBreath');
+      let running = false;
+      let intervalId = null;
+
+      btn.addEventListener('click', ()=> {
+        if(running) { // stop
+          stop();
+          return;
+        }
+        start();
+      });
+
+      function start(){
+        running = true;
+        btn.textContent = 'إيقاف';
+        // protocol: inhale 4s, hold 4s, exhale 4s — repeat 3 دورات
+        let cycles = 3;
+        let phase = 0; // 0 inhale,1 hold,2 exhale
+        let sec = 4;
+        phaseText.textContent = 'شهيق';
+        counter.textContent = String(sec).padStart(2,'0');
+        circle.style.transform = 'scale(1.05)';
+        intervalId = setInterval(()=> {
+          sec--;
+          if(sec >= 0) counter.textContent = String(sec).padStart(2,'0');
+          if(sec <= 0) {
+            // advance phase
+            phase++;
+            if(phase > 2) { phase = 0; cycles--; }
+            if(cycles <= 0) { stop(); return; }
+            // set new phase
+            sec = 4;
+            if(phase === 0){ phaseText.textContent = 'شهيق'; circle.style.transform = 'scale(1.05)'; }
+            else if(phase === 1){ phaseText.textContent = 'حافظ'; circle.style.transform = 'scale(1.0)'; }
+            else { phaseText.textContent = 'زفير'; circle.style.transform = 'scale(0.8)'; }
+            counter.textContent = String(sec).padStart(2,'0');
+          }
+        },1000);
+      }
+
+      function stop(){
+        running = false;
+        btn.textContent = 'ابدأ التمرين';
+        phaseText.textContent = 'جاهز';
+        counter.textContent = '00';
+        circle.style.transform = 'scale(1)';
+        if(intervalId) clearInterval(intervalId);
+        intervalId = null;
+      }
+    })();
+
+    // Pomodoro simple timer
+    (function(){
+      const clock = document.getElementById('pomoClock');
+      const state = document.getElementById('pomoState');
+      const startBtn = document.getElementById('startPomo');
+      const stopBtn = document.getElementById('stopPomo');
+      let total = 25 * 60; // seconds
+      let timerId = null;
+      let running = false;
+
+      function format(t){ const mm = Math.floor(t/60); const ss = t%60; return `${String(mm).padStart(2,'0')}:${String(ss).padStart(2,'0')}`; }
+      function tick(){
+        if(total <= 0){ // switch to break (5 min)
+          state.textContent = 'استراحة 5 دقائق';
+          total = 5 * 60;
+          // optional: notification or sound
+        } else {
+          // continue countdown
+        }
+        clock.textContent = format(total);
+        total--;
+      }
+
+      startBtn.addEventListener('click', ()=>{
+        if(running) return;
+        running = true;
+        state.textContent = 'شغال';
+        timerId = setInterval(()=> {
+          if(total <= 0){
+            // when total becomes -1 after decrement, we handled switch above, do nothing special here
+            // stop if you want single cycle: stop now
+            clearInterval(timerId);
+            running = false;
+            state.textContent = 'انتهت الجلسة';
+            clock.textContent = '00:00';
+            total = 25 * 60; // reset for next time
+            return;
+          }
+          clock.textContent = format(total);
+          total--;
+        },1000);
+      });
+
+      stopBtn.addEventListener('click', ()=>{
+        if(timerId) clearInterval(timerId);
+        running = false;
+        total = 25*60;
+        clock.textContent = format(total);
+        state.textContent = 'متوقف';
+      });
+    })();
+
+    // Break 5 min simple
+    (function(){
+      const btn = document.getElementById('startBreak');
+      btn.addEventListener('click', ()=> {
+        if(confirm('ابدأ استراحة 5 دقائق الآن؟')) {
+          let t = 5*60;
+          const ii = setInterval(()=>{
+            const mm = Math.floor(t/60); const ss = t%60;
+            btn.textContent = `استراحة — ${String(mm).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;
+            t--;
+            if(t < 0){ clearInterval(ii); btn.textContent = 'ابدأ الاستراحة'; alert('انتهت الاستراحة — ارجع تاني للشغل بروح أفضل!'); }
+          },1000);
+        }
+      });
+    })();
+
+    // Sleep reminder (simple local notification via alert + save time)
+    (function(){
+      const btn = document.getElementById('setSleepReminder');
+      btn.addEventListener('click', ()=>{
+        const hh = prompt('ادخل وقت التذكير بالصيغة 24 ساعة (مثال: 22:30) — اترك فارغ للإلغاء');
+        if(!hh) return alert('تم الإلغاء');
+        // basic validation
+        const parts = hh.split(':');
+        if(parts.length !== 2) return alert('الصيغة غلط. مثال صحيح: 22:30');
+        const [H, M] = parts.map(x=>parseInt(x,10));
+        if(Number.isNaN(H) || Number.isNaN(M) || H<0 || H>23 || M<0 || M>59) return alert('وقت غير صالح.');
+        localStorage.setItem('studentwell_sleep_reminder', hh);
+        alert('تم ضبط التذكير — يشتغل كتنبيه محلي بالصفحة (يحتاج الصفحة مفتوحة).');
+        // store but actual notification requires service worker or server ; we'll show in-page check
+      });
+      // simple checker when page loads to notify if time matches and page is open
+      setInterval(()=> {
+        const ts = localStorage.getItem('studentwell_sleep_reminder');
+        if(!ts) return;
+        const now = new Date();
+        const hh = String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+        if(hh === ts && !sessionStorage.getItem('sleep_notified_'+hh)){
+          alert('تذكير نوم: حان وقت التحضير للنوم (طبق روتين النوم الموصى به).');
+          sessionStorage.setItem('sleep_notified_'+hh, '1');
+        }
+      }, 30*1000);
+
+    })();
+
+    // init render
+    renderFavs();
+  </script>
+<script src="site-nav.js"></script>
+<script src="nav-scroll.js"></script>
+</body>
+</html>

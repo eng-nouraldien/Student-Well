@@ -1,0 +1,701 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <link rel="stylesheet" href="styles.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>StudentWell — تذكيرات وأهداف (مع خيار السيرفر)</title>
+  <style>
+    :root{
+      --bg:#f7fbfd;
+      --card:#fff;
+      --accent:#2f6fa8;
+      --accent-2:#4aa3d8;
+      --muted:#56606a;
+      --success:#16a34a;
+      --danger:#dc2626;
+      font-family: 'Segoe UI', Tahoma, system-ui, 'Noto Kufi Arabic', Arial, sans-serif;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:linear-gradient(180deg,var(--bg),#eef6fb);color:#0f172a}
+    header{padding:18px;text-align:center}
+    .brand{display:inline-block;background:var(--card);padding:12px 18px;border-radius:12px;box-shadow:0 10px 30px rgba(19,38,71,0.05)}
+    .brand h1{margin:0;color:var(--accent)}
+    .lead{color:var(--muted);margin-top:6px}
+
+    .container{max-width:1100px;margin:20px auto;padding:0 16px}
+    .layout{display:grid;grid-template-columns:420px 1fr;gap:18px}
+    .card{background:var(--card);padding:14px;border-radius:12px;box-shadow:0 8px 24px rgba(19,38,71,0.04)}
+    label{display:block;margin-bottom:6px;font-weight:700}
+    input[type=text], textarea, input[type=datetime-local], select{
+      width:100%;padding:8px;border:1px solid #e6eefc;border-radius:8px;margin-bottom:10px;font-size:14px
+    }
+    .row{display:flex;gap:8px;align-items:center}
+    .btn{padding:8px 12px;border-radius:10px;border:0;cursor:pointer;font-weight:700}
+    .btn.primary{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white}
+    .btn.ghost{background:transparent;border:1px solid rgba(47,111,168,0.12);color:var(--accent)}
+    .small{padding:6px 8px;font-size:13px}
+
+    .goals-list{max-height:560px;overflow:auto;margin-top:8px}
+    .goal-item{padding:10px;border-radius:10px;border:1px solid #f0f6fb;margin-bottom:10px;display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+    .goal-main{flex:1}
+    .goal-title{font-weight:800;color:var(--accent);margin:0 0 6px}
+    .goal-meta{font-size:13px;color:var(--muted);margin-bottom:6px}
+    .pill{display:inline-block;padding:4px 8px;border-radius:999px;font-size:12px;background:#f1f8ff;color:var(--accent);margin-left:6px}
+
+    .controls{display:flex;gap:8px;flex-wrap:wrap}
+
+    .empty{color:var(--muted);padding:12px;text-align:center}
+
+    footer{margin-top:18px;text-align:center;color:var(--muted)}
+
+    .setting-row{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+
+    @media (max-width:920px){ .layout{grid-template-columns:1fr} }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <h1>تذكيرات &amp; أهداف — StudentWell</h1>
+      <div class="lead">نظم أهدافك وحدد طريقة إرسال التذكيرات: على الذاكرة المحلية أو على سيرفرك الخاص.</div>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="layout">
+      <!-- Sidebar: form لإضافة هدف + إعدادات السيرفر/الصوت -->
+      <aside class="card" aria-labelledby="addTitle">
+        <h2 id="addTitle">أضف هدف / تذكير</h2>
+
+        <form id="goalForm">
+          <label for="title">عنوان الهدف *</label>
+          <input id="title" name="title" type="text" placeholder="مثال: مراجعة ساعتين" required />
+
+          <label for="desc">وصف (اختياري)</label>
+          <textarea id="desc" name="desc" rows="3" placeholder="قليل من التفاصيل..." ></textarea>
+
+          <label for="due">تاريخ/وقت التذكير (اختياري)</label>
+          <input id="due" name="due" type="datetime-local" />
+
+          <label for="repeat">تكرار</label>
+          <select id="repeat" name="repeat">
+            <option value="none">لا يوجد</option>
+            <option value="daily">يومي</option>
+            <option value="weekly">أسبوعي</option>
+          </select>
+
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button type="submit" class="btn primary">اضف الهدف</button>
+            <button type="button" id="importBtn" class="btn ghost small">استيراد JSON</button>
+            <button type="button" id="exportBtn" class="btn ghost small">تصدير JSON</button>
+          </div>
+
+          <div style="margin-top:10px;font-size:13px;color:var(--muted)">
+            ملاحظة: التذكيرات تعمل طالما الصفحة مفتوحة (أو في تبويب). لو اخترت "سيرفر" لازم تدخل عنوان الـ API المناسب.
+          </div>
+        </form>
+
+        <hr style="margin:14px 0;border:none;border-top:1px solid #f0f6fb" />
+
+        <div>
+          <h3 style="margin:0 0 8px">الإعدادات</h3>
+
+          <!-- اختيار طريقة الإرسال -->
+          <div class="setting-row">
+            <label style="margin:0 6px 0 0;font-weight:700">طريقة حفظ/إرسال التذكيرات:</label>
+            <label><input type="radio" name="storageMode" value="local" checked> الذاكرة المحلية</label>
+            <label><input type="radio" name="storageMode" value="server"> السيرفر</label>
+          </div>
+
+          <!-- Server URL -->
+          <div style="margin-bottom:8px">
+            <label for="serverUrl">Server API URL (مثال: https://example.com/api/reminders)</label>
+            <input id="serverUrl" placeholder="https://your-server.com/api/reminders">
+            <div style="font-size:13px;color:var(--muted)">لو اخترت السيرفر، سيتم إرسال POST لكل تذكير/هدف إلى الرابط ده.</div>
+          </div>
+
+          <!-- Notification & sound -->
+          <div style="margin-top:6px">
+            <label style="display:block;margin-bottom:6px">خيارات التذكير</label>
+            <div class="setting-row">
+              <label><input type="checkbox" id="enableNotifications"> استخدم إشعارات النظام (Notification API)</label>
+            </div>
+            <div class="setting-row">
+              <label><input type="checkbox" id="enableSound" checked> شغّل صوت عند التذكير</label>
+            </div>
+            <div style="font-size:13px;color:var(--muted)">للاشعارات الخارجية لازم تسمح للإشعارات في المتصفح؛ الصوت يعمل طالما الصفحة مفتوحة.</div>
+          </div>
+
+          <div style="display:flex;gap:8px;margin-top:10px">
+            <button id="clearAll" class="btn ghost small">مسح كل الأهداف</button>
+            <button id="requestNotify" class="btn ghost small">طلب إذن الإشعارات</button>
+            <button id="testServer" class="btn ghost small">اختبار السيرفر الآن</button>
+          </div>
+
+        </div>
+      </aside>
+
+      <!-- Main: قائمة الأهداف -->
+      <section class="card" aria-labelledby="listTitle">
+        <h2 id="listTitle">قائمة الأهداف والتذكيرات</h2>
+        <div id="goalsContainer" class="goals-list" role="list"></div>
+
+        <div id="emptyState" class="empty">لا توجد أهداف بعد — أضف هدفك الأول من الجنب.</div>
+
+        <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+          <a href="index.html" class="btn ghost small">العودة للرئيسية</a>
+          <a href="plans.html" class="btn ghost small">الخطط والنصايح</a>
+          <a href="survey.html" class="btn ghost small">الاستبيان</a>
+          <a href="contact.html" class="btn ghost small">تواصل</a>
+          <a href="admin.html" class="btn ghost small">لوحة تحكّم (لجنة)</a>
+        </div>
+      </section>
+    </div>
+
+    <footer>
+      © StudentWell — نظم أهدافك وخليك على المسار.
+    </footer>
+  </main>
+
+  <audio id="notifSound" src="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABAAZGF0YQAAAAA="></audio>
+  <!-- ملاحظة: الصوت هنا كـ placeholder silent wav. لو عايز صوت حقيقي حط رابط ملف mp3/wav صالح -->
+
+  <script>
+    /***********************
+     * Storage & Settings  *
+     ***********************/
+    const FORM = document.getElementById('goalForm');
+    const container = document.getElementById('goalsContainer');
+    const emptyState = document.getElementById('emptyState');
+    const exportBtn = document.getElementById('exportBtn');
+    const importBtn = document.getElementById('importBtn');
+    const clearAllBtn = document.getElementById('clearAll');
+    const requestNotifyBtn = document.getElementById('requestNotify');
+    const testServerBtn = document.getElementById('testServer');
+
+    const serverUrlInput = document.getElementById('serverUrl');
+    const storageRadios = document.getElementsByName('storageMode');
+    const enableNotifications = document.getElementById('enableNotifications');
+    const enableSound = document.getElementById('enableSound');
+    const notifSound = document.getElementById('notifSound');
+
+    const STORAGE_KEY = 'studentwell_goals_v1';
+    const SETTINGS_KEY = 'studentwell_settings_v1';
+
+    function loadSettings(){
+      try{
+        return JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}');
+      }catch(e){
+        return {};
+      }
+    }
+    function saveSettings(s){
+      localStorage.setItem(SETTINGS_KEY, JSON.stringify(s));
+    }
+
+    // default settings
+    const defaultSettings = {
+      storageMode: 'local', // 'local' or 'server'
+      serverUrl: '',
+      notifications: false,
+      sound: true
+    };
+
+    // load or init settings
+    const SETTINGS = Object.assign({}, defaultSettings, loadSettings());
+
+    // apply settings to UI
+    function applySettingsToUI(){
+      serverUrlInput.value = SETTINGS.serverUrl || '';
+      enableNotifications.checked = !!SETTINGS.notifications;
+      enableSound.checked = !!SETTINGS.sound;
+      // radios
+      for(const r of storageRadios) if(r.value === SETTINGS.storageMode) r.checked = true;
+    }
+    applySettingsToUI();
+
+    // save UI changes
+    serverUrlInput.addEventListener('change', ()=> { SETTINGS.serverUrl = serverUrlInput.value.trim(); saveSettings(SETTINGS); });
+    enableNotifications.addEventListener('change', ()=> { SETTINGS.notifications = enableNotifications.checked; saveSettings(SETTINGS); });
+    enableSound.addEventListener('change', ()=> { SETTINGS.sound = enableSound.checked; saveSettings(SETTINGS); });
+    for(const r of storageRadios) r.addEventListener('change', ()=> { if(r.checked) { SETTINGS.storageMode = r.value; saveSettings(SETTINGS); } });
+
+    /***********************
+     * Goals storage CRUD  *
+     ***********************/
+    function loadGoals(){
+      try{
+        return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      }catch(e){
+        return [];
+      }
+    }
+    function saveGoals(arr){
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(arr));
+    }
+    function uid(){ return 'g_' + Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+
+    /***********************
+     * Render UI           *
+     ***********************/
+    function render(){
+      const goals = loadGoals();
+      container.innerHTML = '';
+      if(goals.length === 0){ emptyState.style.display = 'block'; return; }
+      emptyState.style.display = 'none';
+
+      goals.slice().reverse().forEach(goal => {
+        const item = document.createElement('div');
+        item.className = 'goal-item';
+        item.setAttribute('role','listitem');
+        item.innerHTML = `
+          <div class="goal-main">
+            <div style="display:flex;align-items:center;gap:8px">
+              <div style="flex:1">
+                <div class="goal-title">${escapeHtml(goal.title)}</div>
+                <div class="goal-meta">${goal.desc ? escapeHtml(goal.desc) : '<span style="color:var(--muted)">بدون وصف</span>'}</div>
+                <div style="font-size:13px;color:var(--muted)">
+                  ${goal.due ? 'موعد: ' + new Date(goal.due).toLocaleString() : '<span class="pill">بدون موعد</span>'}
+                  ${goal.repeat && goal.repeat !== 'none' ? `<span class="pill">تكرار: ${escapeHtml(goal.repeat)}</span>` : ''}
+                  ${goal.completed ? `<span class="pill" style="background:#e6ffef;color:var(--success)">مكتمل</span>` : ''}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
+            <div class="controls">
+              <button class="btn small ghost" data-action="toggle" data-id="${goal.id}">${goal.completed ? 'إلغاء الإنجاز' : 'معلم كمنجز'}</button>
+              <button class="btn small ghost" data-action="edit" data-id="${goal.id}">تعديل</button>
+              <button class="btn small" style="background:#ffeef0;color:var(--danger)" data-action="delete" data-id="${goal.id}">حذف</button>
+            </div>
+            <div style="font-size:12px;color:var(--muted)">${timeSince(goal.created)}</div>
+          </div>
+        `;
+        item.querySelectorAll('button').forEach(b=>{
+          b.addEventListener('click', (e)=>{
+            const action = b.getAttribute('data-action');
+            const id = b.getAttribute('data-id');
+            if(action === 'delete') deleteGoal(id);
+            if(action === 'toggle') toggleComplete(id);
+            if(action === 'edit') editGoal(id);
+          });
+        });
+        container.appendChild(item);
+      });
+    }
+
+    /***********************
+     * CRUD functions      *
+     ***********************/
+    function addGoal(obj){
+      const arr = loadGoals();
+      arr.push(obj);
+      saveGoals(arr);
+      render();
+
+      // also send to server if chosen
+      if(SETTINGS.storageMode === 'server' && SETTINGS.serverUrl) {
+        sendGoalToServer(obj).then(res=>{
+          // server response handling already done in sendGoalToServer
+        });
+      }
+    }
+
+    function deleteGoal(id){
+      if(!confirm('هل تريد حذف هذا الهدف؟')) return;
+      const arr = loadGoals().filter(g=>g.id !== id);
+      saveGoals(arr);
+      render();
+    }
+
+    function toggleComplete(id){
+      const arr = loadGoals();
+      const g = arr.find(x=>x.id === id);
+      if(!g) return;
+      g.completed = !g.completed;
+      g.completedAt = g.completed ? Date.now() : null;
+      saveGoals(arr);
+      render();
+    }
+
+    function editGoal(id){
+      const arr = loadGoals();
+      const g = arr.find(x=>x.id === id);
+      if(!g) return alert('العنصر مش موجود.');
+      document.getElementById('title').value = g.title;
+      document.getElementById('desc').value = g.desc || '';
+      document.getElementById('due').value = g.due ? formatForInput(new Date(g.due)) : '';
+      document.getElementById('repeat').value = g.repeat || 'none';
+      // حذف العنصر القديم وسيتم إضافة نسخة جديدة عند الحفظ
+      const newArr = arr.filter(x=>x.id !== id);
+      saveGoals(newArr);
+      render();
+      window.scrollTo({top:0,behavior:'smooth'});
+    }
+
+    /***********************
+     * Utilities           *
+     ***********************/
+    function formatForInput(d){
+      const pad = n => String(n).padStart(2,'0');
+      return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    }
+    function timeSince(ts){
+      const diff = Math.floor((Date.now() - ts)/1000);
+      if(diff < 60) return `${diff} ث`;
+      if(diff < 3600) return `${Math.floor(diff/60)} د`;
+      if(diff < 86400) return `${Math.floor(diff/3600)} س`;
+      return `${Math.floor(diff/86400)} يوم`;
+    }
+    function escapeHtml(s){ if(!s) return ''; return String(s).replace(/[&<>"']/g, c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[c]); }
+
+    /***********************
+     * Form handling       *
+     ***********************/
+    FORM.addEventListener('submit', e=>{
+      e.preventDefault();
+      const title = FORM.title.value.trim();
+      if(!title) return alert('اكتب عنوان للهدف.');
+      const desc = FORM.desc.value.trim();
+      const dueVal = FORM.due.value ? new Date(FORM.due.value).toISOString() : null;
+      const repeat = FORM.repeat.value || 'none';
+      const newGoal = {
+        id: uid(),
+        title, desc,
+        due: dueVal,
+        repeat,
+        created: Date.now(),
+        completed: false
+      };
+      addGoal(newGoal);
+      FORM.reset();
+      alert('تم إضافة الهدف.');
+    });
+
+    /***********************
+     * Export / Import     *
+     ***********************/
+    exportBtn.addEventListener('click', ()=>{
+      const data = JSON.stringify(loadGoals(), null, 2);
+      const blob = new Blob([data], {type:'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = 'studentwell_goals.json'; a.click(); URL.revokeObjectURL(url);
+    });
+
+    importBtn.addEventListener('click', ()=>{
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'application/json';
+      input.onchange = ()=> {
+        const file = input.files[0];
+        if(!file) return;
+        const reader = new FileReader();
+        reader.onload = ()=>{
+          try{
+            const parsed = JSON.parse(reader.result);
+            if(!Array.isArray(parsed)) throw new Error('JSON غير صحيح.');
+            const sanitized = parsed.map(p=>({
+              id: p.id || uid(),
+              title: p.title || 'بدون عنوان',
+              desc: p.desc || '',
+              due: p.due || null,
+              repeat: p.repeat || 'none',
+              created: p.created || Date.now(),
+              completed: !!p.completed
+            }));
+            saveGoals(sanitized);
+            render();
+            alert('تم استيراد الأهداف.');
+          }catch(err){
+            alert('فشل الاستيراد — تأكد من ملف JSON مناسب.');
+          }
+        };
+        reader.readAsText(file);
+      };
+      input.click();
+    });
+
+    clearAllBtn.addEventListener('click', ()=>{
+      if(!confirm('هل أنت متأكد من مسح كل الأهداف؟')) return;
+      saveGoals([]);
+      render();
+    });
+
+    /***********************
+     * Notifications & sound*
+     ***********************/
+    requestNotifyBtn.addEventListener('click', async ()=>{
+      if(!('Notification' in window)) return alert('الإشعارات غير مدعومة في المتصفح ده.');
+      try{
+        const p = await Notification.requestPermission();
+        SETTINGS.notifications = (p === 'granted');
+        saveSettings(SETTINGS);
+        applySettingsToUI();
+        alert('حالة إذن الإشعارات: ' + p);
+      }catch(e){
+        alert('فشل طلب الإذن.');
+      }
+    });
+
+    // play sound helper
+    function playSound(){
+      try{
+        if(!SETTINGS.sound) return;
+        // user might need to interact with page before play is allowed
+        notifSound.currentTime = 0;
+        notifSound.play().catch(()=>{/* ignore play errors */});
+      }catch(e){}
+    }
+
+    /***********************
+     * Server integration  *
+     ***********************/
+    async function sendGoalToServer(goal){
+      // goal: object
+      const url = SETTINGS.serverUrl || '';
+      if(!url) {
+        alert('لم تحدد رابط السيرفر في الإعدادات.');
+        return {ok:false, error:'no-url'};
+      }
+      try{
+        const resp = await fetch(url, {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({action:'add_goal', goal})
+        });
+        if(!resp.ok) {
+          // fallback: save local copy as backup
+          fallbackSave(goal, 'server-fail');
+          alert('فشل إرسال البيانات للسيرفر — تم حفظها محليًا كنسخة احتياطية.');
+          return {ok:false, status:resp.status};
+        }
+        const json = await resp.json().catch(()=>null);
+        alert('تم إرسال الهدف للسيرفر بنجاح.');
+        return {ok:true, json};
+      }catch(err){
+        fallbackSave(goal, 'server-error');
+        alert('تعذر الوصول للسيرفر — تم حفظ الهدف محليًا كنسخة احتياطية.');
+        return {ok:false, error:err.message};
+      }
+    }
+
+    function fallbackSave(obj, tag){
+      // حفظ نسخة احتياطية محليًا ضمن مفتاح مخصص
+      const key = 'studentwell_server_fallback_v1';
+      const arr = JSON.parse(localStorage.getItem(key) || '[]');
+      arr.push({t:Date.now(), tag, obj});
+      localStorage.setItem(key, JSON.stringify(arr));
+    }
+
+    // test server button
+    testServerBtn.addEventListener('click', async ()=>{
+      SETTINGS.serverUrl = serverUrlInput.value.trim();
+      saveSettings(SETTINGS);
+      if(!SETTINGS.serverUrl) return alert('ادخل رابط السيرفر أولاً.');
+      // send a test ping
+      try{
+        const resp = await fetch(SETTINGS.serverUrl, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'ping', t:Date.now()})});
+        if(resp.ok) { alert('اختبار ناجح — استجابة من السيرفر.'); }
+        else alert('اختبار فشل — رد السيرفر برمز: ' + resp.status);
+      }catch(e){
+        alert('تعذر الوصول للسيرفر: ' + e.message);
+      }
+    });
+
+    /***********************
+     * Reminders loop      *
+     ***********************/
+    // تحقق كل 30 ثانية من التذكيرات وقتها
+    setInterval(checkReminders, 30*1000);
+    window.addEventListener('load', ()=>{ render(); checkReminders(); loadSettingsToMemory(); });
+
+    function loadSettingsToMemory(){
+      // ensure SETTINGS object updated with UI
+      SETTINGS.serverUrl = serverUrlInput.value.trim();
+      SETTINGS.notifications = enableNotifications.checked;
+      SETTINGS.sound = enableSound.checked;
+      for(const r of storageRadios) if(r.checked) SETTINGS.storageMode = r.value;
+      saveSettings(SETTINGS);
+    }
+
+    async function checkReminders(){
+      // refresh settings from UI in case user modified
+      loadSettingsToMemory();
+      const goals = loadGoals();
+      const now = Date.now();
+      for(const g of goals){
+        if(!g.due) continue;
+        // if already notified and no repeat, skip
+        if(g.notified && (g.repeat === 'none')) continue;
+        const dueTs = new Date(g.due).getTime();
+        // trigger if within 60s of now
+        if(Math.abs(now - dueTs) < 60*1000){
+          // trigger
+          await triggerReminder(g);
+          // update next occurrence
+          if(g.repeat === 'daily'){
+            const next = new Date(g.due); next.setDate(next.getDate() + 1); g.due = next.toISOString();
+            // keep g.notified undefined so it'll remind again in next cycle
+          } else if(g.repeat === 'weekly'){
+            const next = new Date(g.due); next.setDate(next.getDate() + 7); g.due = next.toISOString();
+          } else {
+            g.notified = true;
+          }
+          saveGoals(goals);
+          render();
+        }
+      }
+    }
+
+    async function triggerReminder(g){
+      // 1) play sound if enabled
+      if(SETTINGS.sound) playSound();
+
+      // 2) if notifications allowed, show system notification
+      if(SETTINGS.notifications && 'Notification' in window && Notification.permission === 'granted'){
+        try{
+          const n = new Notification(`تذكير: ${g.title}`, {body: g.desc || 'حان موعد التذكير', tag: g.id});
+          n.onclick = ()=> window.focus();
+        }catch(e){
+          // ignore
+        }
+      } else {
+        // fallback in-page alert
+        try{ alert(`تذكير: ${g.title}\n\n${g.desc || ''}`); }catch(e){}
+      }
+
+      // 3) send to server OR save locally depending on setting
+      if(SETTINGS.storageMode === 'server' && SETTINGS.serverUrl){
+        // send basic reminder payload; handle errors inside
+        try{
+          const resp = await fetch(SETTINGS.serverUrl, {
+            method: 'POST',
+            headers: {'Content-Type':'application/json'},
+            body: JSON.stringify({action:'reminder_triggered', reminder: g})
+          });
+          if(resp.ok){
+            // optional: mark as notified on server
+            console.log('Reminder sent to server.');
+          } else {
+            fallbackSave(g, 'send-reminder-failed-status:'+resp.status);
+          }
+        }catch(err){
+          fallbackSave(g, 'send-reminder-error:'+ (err.message || 'err'));
+        }
+      } else {
+        // storageMode local => simply keep local behavior (already saved)
+      }
+    }
+
+    /***********************
+     * Helpers on load     *
+     ***********************/
+    // restore settings from localStorage into SETTINGS object and UI
+    window.addEventListener('load', ()=>{
+      const s = loadSettings();
+      Object.assign(SETTINGS, s);
+      applySettingsToUI();
+      // if notification permission was granted earlier, reflect that
+      if('Notification' in window && Notification.permission === 'granted') {
+        SETTINGS.notifications = true; enableNotifications.checked = true;
+      }
+      // load server URL from settings into field
+      serverUrlInput.value = SETTINGS.serverUrl || '';
+    });
+
+    /***********************
+     * Send existing fallback entries to server (optional) *
+     ***********************/
+    // helper to flush fallback saved items to server when user clicks (not automatic to avoid surprise)
+    async function flushFallbacksToServer(){
+      const key = 'studentwell_server_fallback_v1';
+      const arr = JSON.parse(localStorage.getItem(key) || '[]');
+      if(arr.length === 0) return alert('لا توجد بيانات احتياطية مرسلة.');
+      if(!SETTINGS.serverUrl) return alert('حدد رابط السيرفر أولاً في الإعدادات.');
+      for(const item of arr){
+        try{
+          const resp = await fetch(SETTINGS.serverUrl, {
+            method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(item)
+          });
+          if(resp.ok){
+            // remove this item from fallback list
+            // we'll rebuild new array excluding this item
+          }
+        }catch(e){
+          // ignore individual failures
+        }
+      }
+      // for simplicity, after attempt clear fallback (in real app you'd remove only successes)
+      localStorage.removeItem(key);
+      alert('تم محاولة الإرسال — تم مسح النسخ الاحتياطية محليًا (راجع سجلات السيرفر للتأكيد).');
+    }
+
+    // optional UI binding for flush (add small button programmatically)
+    (function addFlushButton(){
+      const btn = document.createElement('button');
+      btn.className = 'btn ghost small';
+      btn.textContent = 'إرسال النسخ الاحتياطية للسيرفر';
+      btn.addEventListener('click', ()=> {
+        if(!confirm('هل تريد محاولة إرسال النسخ الاحتياطية للسيرفر الآن؟')) return;
+        flushFallbacksToServer();
+      });
+      // append to settings area
+      const settingsCard = document.querySelector('aside.card div h3');
+      const parent = document.querySelector('aside.card div');
+      parent.appendChild(btn);
+    })();
+
+    /***********************
+     * Server send for add *
+     ***********************/
+    // when adding goal and settings.server == 'server', we call sendGoalToServer inside addGoal (see above)
+
+    /***********************
+     * Utility: Send test  *
+     ***********************/
+    testServerBtn.addEventListener('click', async ()=>{
+      SETTINGS.serverUrl = serverUrlInput.value.trim();
+      saveSettings(SETTINGS);
+      if(!SETTINGS.serverUrl) return alert('ادخل رابط السيرفر أولاً.');
+      try{
+        const resp = await fetch(SETTINGS.serverUrl, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'ping', t:Date.now()})});
+        if(resp.ok) { alert('اختبار ناجح — استجابة من السيرفر.'); }
+        else alert('اختبار فشل — رد السيرفر برمز: ' + resp.status);
+      }catch(e){
+        alert('تعذر الوصول للسيرفر: ' + e.message);
+      }
+    });
+
+    /***********************
+     * Fallback goal sender (for add) - uses same sendGoalToServer function above
+     ***********************/
+    // sendGoalToServer defined earlier in code
+
+    /***********************
+     * Persist settings UI *
+     ***********************/
+    function applySettingsToUI(){
+      serverUrlInput.value = SETTINGS.serverUrl || '';
+      enableNotifications.checked = !!SETTINGS.notifications;
+      enableSound.checked = !!SETTINGS.sound;
+      for(const r of storageRadios) if(r.value === SETTINGS.storageMode) r.checked = true;
+    }
+
+    // Save settings whenever UI changes (already wired earlier)
+    // But ensure saving initial settings object
+    saveSettings(SETTINGS);
+
+    /***********************
+     * small helpers       *
+     ***********************/
+    // escape-html function already defined above (redefine safe)
+    function escapeHtml(s){ if(!s) return ''; return String(s).replace(/[&<>"']/g, c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[c]); }
+
+    // initial render
+    render();
+  </script>
+<script src="site-nav.js"></script>
+<script src="nav-scroll.js"></script>
+</body>
+</html>

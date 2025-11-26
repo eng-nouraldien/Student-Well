@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>StudentWell — منظم يومي</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    :root{
+      --bg:#f6fbff; --card:#fff; --accent:#2f6fa8; --muted:#5f6871; --accent-dark:#27465e;
+      font-family: 'Segoe UI', Tahoma, 'Noto Kufi Arabic', Arial, sans-serif;
+    }
+    body{margin:0;background:linear-gradient(180deg,#fbfdff,#eef6fb);color:#0f172a;min-height:100vh}
+    header{padding:18px;text-align:center}
+    .wrap{max-width:1100px;margin:12px auto;padding:0 16px}
+    .brand { display:flex; align-items:center; gap:12px; justify-content:center; }
+    .brand img{height:44px;border-radius:6px;object-fit:contain}
+    .brand h1{margin:0;color:var(--accent);font-size:20px}
+    .grid{display:grid;grid-template-columns: 1fr 380px; gap:18px; margin-top:18px}
+    .card{background:var(--card);border-radius:12px;padding:16px;box-shadow:0 10px 30px rgba(19,38,71,0.05)}
+    label{display:block;margin-bottom:6px;font-weight:700}
+    input[type=text], input[type=time], select, input[type=number]{
+      width:100%; padding:8px;border-radius:8px;border:1px solid #e6eefc;margin-bottom:8px;
+    }
+    .row{display:flex;gap:8px}
+    .row .col{flex:1}
+    button{background:var(--accent);color:#fff;padding:8px 12px;border-radius:8px;border:0;cursor:pointer}
+    .btn-ghost{background:transparent;border:1px solid rgba(47,111,168,0.12);color:var(--accent);padding:8px 10px;border-radius:8px}
+    .events-list{display:flex;flex-direction:column;gap:10px;margin-top:8px}
+    .event-item{padding:10px;border-radius:10px;border:1px solid #eef6fb;display:flex;justify-content:space-between;align-items:center}
+    .event-meta{font-size:14px;color:var(--muted)}
+    .timeline{margin-top:12px;border-radius:8px;overflow:hidden;border:1px solid #f0f6fb;background:linear-gradient(180deg,#fff,#fbfdff)}
+    .slot{display:flex;gap:12px;padding:8px 12px;border-bottom:1px solid #f5f9fc;align-items:center}
+    .slot:last-child{border-bottom:0}
+    .slot .time{width:120px;font-weight:700;color:var(--accent-dark)}
+    .slot .what{flex:1}
+    .badge{display:inline-block;background:#eaf5ff;color:var(--accent);padding:6px 8px;border-radius:999px;margin-left:8px;font-size:12px}
+    .badge.lecture{background:#eaf5ff;color:#2f6fa8}
+    .badge.work{background:#fff4e6;color:#b45309}
+    .badge.gym{background:#eefbe9;color:#15803d}
+    .badge.study{background:#f0f9ff;color:#0369a1}
+    .controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+    .settings{margin-top:12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    .muted{color:var(--muted)}
+    @media (max-width:980px){
+      .grid{grid-template-columns:1fr}
+      .brand{flex-direction:column}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap brand">
+      <!-- corrected logo element id and using uploaded file path -->
+      <img id="siteLogo" src="/mnt/data/A_logo_for_\"StudentWell\"_is_depicted_in_a_digital_.png" alt="StudentWell logo" loading="lazy">
+      <h1>StudentWell — منظم اليوم</h1>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="grid">
+      <!-- left: planner and results -->
+      <section class="card">
+        <h3>أدخل مواعيدك لليوم</h3>
+        <form id="evtForm">
+          <div style="display:grid;grid-template-columns:1fr 120px;gap:8px">
+            <div>
+              <label for="evtTitle">عنوان الحدث</label>
+              <input id="evtTitle" type="text" placeholder="محاضرة في.. / شغل / جيم">
+            </div>
+            <div>
+              <label for="evtType">نوع</label>
+              <select id="evtType">
+                <option value="lecture">محاضرة/كورس</option>
+                <option value="work">شغل</option>
+                <option value="gym">جيم/رياضة</option>
+                <option value="other">أخرى</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col">
+              <label for="evtStart">بداية</label>
+              <input id="evtStart" type="time" value="09:00">
+            </div>
+            <div class="col">
+              <label for="evtEnd">نهاية</label>
+              <input id="evtEnd" type="time" value="10:30">
+            </div>
+            <div style="width:120px">
+              <label for="evtFixed">ثابت؟</label>
+              <select id="evtFixed">
+                <option value="1">نعم</option>
+                <option value="0">لا (مرن)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row">
+            <button id="addEvtBtn" type="button">أضف للجدول</button>
+            <button id="clearDayBtn" type="button" class="btn-ghost">مسح اليوم</button>
+            <div style="margin-left:auto" class="controls">
+              <label style="display:flex;align-items:center;gap:6px"><input id="autoFill" type="checkbox" checked> املأ الفراغات</label>
+              <label>نمط الملء:
+                <select id="fillMode">
+                  <option value="pomodoro">Pomodoro 25/5</option>
+                  <option value="long">جلسات طويلة 50/10</option>
+                  <option value="flex">مرن (30-60)</option>
+                </select>
+              </label>
+            </div>
+          </div>
+        </form>
+
+        <div style="margin-top:12px">
+          <h4>الأحداث لليوم</h4>
+          <div id="eventsList" class="events-list" aria-live="polite"></div>
+        </div>
+
+        <div style="margin-top:12px">
+          <button id="generateBtn">اقترح جدول اليوم</button>
+          <button id="exportSchedule" class="btn-ghost">تصدير (JSON)</button>
+        </div>
+
+        <div class="settings">
+          <label>بداية اليوم: <input id="dayStart" type="time" value="07:00"></label>
+          <label>نهاية اليوم: <input id="dayEnd" type="time" value="23:00"></label>
+          <label>المدة الإجمالية للمذاكرة (ساعة): <input id="targetHours" type="number" value="4" min="0" max="24" style="width:80px"></label>
+        </div>
+
+        <div style="margin-top:14px" id="scheduleArea">
+          <h4>الجدول المقترح</h4>
+          <div id="timeline" class="timeline"></div>
+        </div>
+      </section>
+
+      <!-- right: tips + legend -->
+      <aside class="card">
+        <h4>نصايح سريعة</h4>
+        <ul style="color:var(--muted);line-height:1.6">
+          <li>حدد أوقات ثابتة للمحاضرات والعمل أولاً — النظام هيحط المذاكرة حولها.</li>
+          <li>لو عندك امتحان قريب، زود ساعات المذاكرة في "المدة الإجمالية".</li>
+          <li>جرب نمط Pomodoro لو تركيزك بيقل بسرعة.</li>
+        </ul>
+
+        <div style="margin-top:12px">
+          <h4>وسوم</h4>
+          <div><span class="badge lecture">محاضرة</span> <span class="badge work">شغل</span> <span class="badge gym">رياضة</span> <span class="badge study">مذاكرة</span></div>
+        </div>
+
+        <div style="margin-top:12px">
+          <h4>تخزين</h4>
+          <p class="muted">الجدول والأحداث محفوظين محليًا في المتصفح. يمكنك تصدير JSON ومشاركته.</p>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <script>
+    // ---------- Utilities ----------
+    function toMinutes(t) {
+      const [hh,mm] = String(t).split(':').map(Number);
+      return (Number.isFinite(hh) && Number.isFinite(mm))? hh*60 + mm : NaN;
+    }
+    function fromMinutes(m){
+      const hh = Math.floor(m/60).toString().padStart(2,'0');
+      const mm = Math.floor(m%60).toString().padStart(2,'0');
+      return `${hh}:${mm}`;
+    }
+
+    // ---------- state ----------
+    const EVENTS_KEY = 'studentwell_day_events_v1';
+    let events = JSON.parse(localStorage.getItem(EVENTS_KEY) || '[]');
+
+    // ---------- DOM refs ----------
+    const evtTitle = document.getElementById('evtTitle');
+    const evtType = document.getElementById('evtType');
+    const evtStart = document.getElementById('evtStart');
+    const evtEnd = document.getElementById('evtEnd');
+    const evtFixed = document.getElementById('evtFixed');
+    const addEvtBtn = document.getElementById('addEvtBtn');
+    const eventsList = document.getElementById('eventsList');
+    const generateBtn = document.getElementById('generateBtn');
+    const timeline = document.getElementById('timeline');
+    const exportSchedule = document.getElementById('exportSchedule');
+    const clearDayBtn = document.getElementById('clearDayBtn');
+    const dayStartInp = document.getElementById('dayStart');
+    const dayEndInp = document.getElementById('dayEnd');
+    const targetHoursInp = document.getElementById('targetHours');
+    const autoFillChk = document.getElementById('autoFill');
+    const fillModeSel = document.getElementById('fillMode');
+
+    // ---------- helper UI ----------
+    function saveEvents(){ localStorage.setItem(EVENTS_KEY, JSON.stringify(events)); }
+
+    function renderEvents(){
+      eventsList.innerHTML = '';
+      if(events.length === 0) { eventsList.innerHTML = '<div class="muted">لا توجد أحداث بعد.</div>'; return; }
+      // sort by start time
+      const sorted = events.slice().sort((a,b)=> toMinutes(a.start) - toMinutes(b.start));
+      sorted.forEach((ev)=>{
+        const id = ev.id || (ev.id = 'e_' + Date.now().toString(36) + Math.random().toString(36).slice(2,6));
+        const div = document.createElement('div');
+        div.className = 'event-item';
+        const badgeClass = ev.type === 'lecture'? 'lecture' : ev.type === 'work'? 'work' : ev.type === 'gym'? 'gym' : '';
+        div.innerHTML = `<div>
+            <div style="font-weight:800">${escapeHtml(ev.title)} <span class="badge ${badgeClass}">${escapeHtml(ev.type)}</span></div>
+            <div class="event-meta">${escapeHtml(ev.start)} — ${escapeHtml(ev.end)} ${ev.fixed? '• ثابت':''}</div>
+          </div>
+          <div>
+            <button class="btn-ghost" data-id="${id}" data-action="del">حذف</button>
+            <button class="btn-ghost" data-id="${id}" data-action="edit">تعديل</button>
+          </div>`;
+        div.querySelector('[data-action="del"]').addEventListener('click', (e)=>{
+          const i = events.findIndex(x=>x.id === e.target.getAttribute('data-id'));
+          if(i>=0){ events.splice(i,1); saveEvents(); renderEvents(); }
+        });
+        div.querySelector('[data-action="edit"]').addEventListener('click', (e)=>{
+          const idd = e.target.getAttribute('data-id');
+          const idx = events.findIndex(x=>x.id === idd);
+          if(idx<0) return;
+          const ev = events[idx];
+          // populate form
+          evtTitle.value = ev.title; evtType.value = ev.type; evtStart.value = ev.start; evtEnd.value = ev.end; evtFixed.value = ev.fixed? '1':'0';
+          // remove original so re-add will replace
+          events.splice(idx,1); saveEvents(); renderEvents();
+        });
+        eventsList.appendChild(div);
+      });
+    }
+    function escapeHtml(s){ if(!s) return ''; return String(s).replace(/[&<>\"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"})[c]); }
+
+    // ---------- add event ----------
+    addEvtBtn.addEventListener('click', ()=>{
+      const title = evtTitle.value.trim() || 'حدث';
+      const type = evtType.value;
+      const start = evtStart.value;
+      const end = evtEnd.value;
+      const fixed = evtFixed.value === '1';
+      if(!start || !end) return alert('حدد وقت البداية والنهاية.');
+      if(toMinutes(end) <= toMinutes(start)) return alert('نهاية الحدث لازم تكون بعد البداية.');
+      const obj = { id: 'e_' + Date.now().toString(36) + Math.random().toString(36).slice(2,6), title, type, start, end, fixed };
+      events.push(obj);
+      saveEvents(); renderEvents();
+      evtTitle.value = ''; evtStart.value = '09:00'; evtEnd.value = '10:30';
+    });
+
+    clearDayBtn.addEventListener('click', ()=>{
+      if(!confirm('مسح كل الأحداث من اليوم؟')) return;
+      events = []; saveEvents(); renderEvents(); timeline.innerHTML = '';
+    });
+
+    // ---------- schedule generation ----------
+    function generateSchedule(){
+      const startDay = toMinutes(dayStartInp.value || '07:00');
+      const endDay = toMinutes(dayEndInp.value || '23:00');
+      if(endDay <= startDay) return alert('تأكد من وقت بداية/نهاية اليوم.');
+
+      // gather busy intervals from events (use fixed/any)
+      const busy = events.map(ev=>({ start: toMinutes(ev.start), end: toMinutes(ev.end), title:ev.title, type:ev.type, fixed:ev.fixed }));
+      busy.sort((a,b)=>a.start-b.start);
+
+      // merge overlaps
+      const merged = [];
+      busy.forEach(b=>{
+        if(merged.length===0) merged.push({...b});
+        else{
+          const last = merged[merged.length-1];
+          if(b.start <= last.end){ last.end = Math.max(last.end, b.end); last.title += `, ${b.title}`; }
+          else merged.push({...b});
+        }
+      });
+
+      // build free slots between startDay..endDay that are outside merged busy times
+      const freeSlots = [];
+      let cursor = startDay;
+      merged.forEach(m=>{
+        if(m.start > cursor) freeSlots.push({start:cursor, end:m.start});
+        cursor = Math.max(cursor, m.end);
+      });
+      if(cursor < endDay) freeSlots.push({start:cursor, end:endDay});
+
+      // target study minutes
+      const targetHours = Number(targetHoursInp.value) || 0;
+      let remainingMinutes = Math.round(targetHours * 60);
+
+      const fillMode = fillModeSel.value;
+      const blocks = [];
+
+      // include merged events as anchors
+      merged.forEach(m => blocks.push({type:'event', start:m.start, end:m.end, title:m.title}));
+
+      // fill free slots according to mode
+      for(const slot of freeSlots){
+        let slotCursor = slot.start;
+        const slotEnd = slot.end;
+        while(slotCursor + 15 <= slotEnd && remainingMinutes > 0){
+          let studyLen=25, breakLen=5;
+          if(fillMode === 'long'){ studyLen = 50; breakLen = 10; }
+          if(fillMode === 'flex'){
+            studyLen = remainingMinutes >= 45 ? 45 : Math.min(30, remainingMinutes);
+            breakLen = 8;
+          }
+          if(slotCursor + studyLen > slotEnd){
+            const avail = slotEnd - slotCursor;
+            if(avail < 15) break;
+            studyLen = Math.min(studyLen, avail);
+          }
+          const studyStart = slotCursor;
+          const studyEnd = Math.min(slotCursor + studyLen, slotEnd);
+          blocks.push({type:'study', start:studyStart, end:studyEnd, title:'مذاكرة'});
+          remainingMinutes -= (studyEnd - studyStart);
+          slotCursor = studyEnd;
+          if(slotCursor + breakLen <= slotEnd){
+            const bstart = slotCursor; const bend = Math.min(slotCursor + breakLen, slotEnd);
+            blocks.push({type:'break', start:bstart, end:bend, title:'راحة قصيرة'});
+            slotCursor = bend;
+          } else break;
+        }
+      }
+
+      // combine and sort
+      const all = blocks.concat(merged.map(m=>({type:'event', start:m.start, end:m.end, title:m.title})));
+      all.sort((a,b)=>a.start - b.start);
+
+      renderTimeline(all, startDay, endDay, remainingMinutes);
+    }
+
+    function renderTimeline(list, startDay, endDay, remainingMinutes){
+      timeline.innerHTML = '';
+      if(list.length === 0) { timeline.innerHTML = '<div style="padding:12px;color:var(--muted)">لا توجد أنشطة أو المساحة فارغة — أضف أحداثًا أو اضغط اقتراح.</div>'; return; }
+      list.forEach(item=>{
+        const div = document.createElement('div'); div.className = 'slot';
+        let whatText = item.title || '';
+        if(item.type === 'study') whatText = item.title + ' • ' + `${item.end - item.start} دقيقة`;
+        if(item.type === 'break') whatText = item.title;
+        if(item.type === 'event') whatText = item.title + ' (محجوز)';
+        const timeHtml = `<div class="time">${fromMinutes(item.start)} — ${fromMinutes(item.end)}</div>`;
+        const whatHtml = `<div class="what">${escapeHtml(whatText)}</div>`;
+        div.innerHTML = timeHtml + whatHtml;
+        timeline.appendChild(div);
+      });
+      if(remainingMinutes > 0){
+        const note = document.createElement('div');
+        note.style.padding = '10px'; note.style.color = 'var(--muted)';
+        note.textContent = `تبقى ${Math.round(remainingMinutes)} دقيقة من هدف المذاكرة لم يتم تعبئتها. يمكنك زيادة وقت اليوم أو تقليل فترات الراحة.`;
+        timeline.appendChild(note);
+      }
+    }
+
+    // ---------- export ----------
+    exportSchedule.addEventListener('click', ()=>{
+      const data = { events, exportedAt: Date.now() };
+      const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = 'studentwell_schedule.json'; a.click(); URL.revokeObjectURL(url);
+    });
+
+    // ---------- init ----------
+    function init(){ renderEvents(); }
+    generateBtn.addEventListener('click', ()=> generateSchedule());
+    window.addEventListener('beforeunload', ()=> saveEvents());
+    init();
+  </script>
+<script src="site-nav.js"></script>
+<script src="nav-scroll.js"></script>
+</body>
+</html>

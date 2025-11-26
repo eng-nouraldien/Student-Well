@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <link rel="stylesheet" href="styles.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>StudentWell — تواصل معنا</title>
+  <style>
+    :root{
+      --bg:#f3f7fb;
+      --card:#ffffff;
+      --accent:#2f6fa8;
+      --muted:#6b7280;
+      --glass: rgba(255,255,255,0.6);
+      font-family: 'Segoe UI', Tahoma, system-ui, 'Noto Kufi Arabic', Arial, sans-serif;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:linear-gradient(180deg,var(--bg),#eef6fb);color:#0f172a}
+    header{padding:44px 16px 18px;text-align:center}
+    .brand{display:inline-block;background:var(--card);padding:14px 20px;border-radius:14px;box-shadow:0 12px 30px rgba(19,38,71,0.06)}
+    .brand h1{margin:0;color:var(--accent);font-size:22px}
+    .lead{color:var(--muted);margin-top:8px}
+
+    .container{max-width:1000px;margin:20px auto;padding:0 16px}
+    .grid{display:grid;grid-template-columns:1fr 420px;gap:18px}
+    .card{background:var(--card);padding:16px;border-radius:12px;box-shadow:0 8px 24px rgba(19,38,71,0.05)}
+    .contact-list{display:flex;flex-direction:column;gap:12px}
+    .contact-item{display:flex;gap:12px;align-items:center}
+    .icon{
+      width:52px;height:52px;border-radius:10px;display:flex;align-items:center;justify-content:center;
+      background:linear-gradient(180deg,#fff,#f6fbff);box-shadow:0 6px 16px rgba(19,38,71,0.04)
+    }
+    .meta{display:flex;flex-direction:column}
+    .meta b{font-size:15px;color:var(--accent)}
+    .meta small{color:var(--muted);font-size:13px}
+
+    .socials{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+    .socials a{display:inline-flex;gap:8px;align-items:center;padding:8px 10px;border-radius:10px;text-decoration:none;border:1px solid rgba(47,111,168,0.08);background:#fff;color:var(--accent);font-weight:700}
+
+    form label{display:block;margin:8px 0 6px;font-weight:700}
+    input[type=text], input[type=email], textarea{
+      width:100%;padding:10px;border-radius:10px;border:1px solid #e6eefc;font-size:14px;margin-bottom:8px
+    }
+    button{padding:10px 14px;border-radius:10px;border:0;background:linear-gradient(90deg,var(--accent),#4aa3d8);color:white;cursor:pointer;font-weight:700}
+    .ghost{background:transparent;border:1px solid rgba(47,111,168,0.12);color:var(--accent);padding:8px 10px;border-radius:10px}
+
+    .note{font-size:13px;color:var(--muted);margin-top:8px}
+
+    @media (max-width:920px){ .grid{grid-template-columns:1fr} .icon{width:48px;height:48px} }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand" role="banner">
+      <h1>تواصل معنا — StudentWell</h1>
+      <div class="lead">لو عندك سؤال، اقتراح، أو محتاج دعم — تواصل معانا بواحدة من الوسائل دي.</div>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="grid">
+      <!-- Left: contact info & socials -->
+      <section class="card" aria-labelledby="contactsTitle">
+        <h2 id="contactsTitle">وسائل التواصل</h2>
+
+        <div class="contact-list" role="list">
+          <!-- Email -->
+          <div class="contact-item" role="listitem">
+            <div class="icon" aria-hidden>
+              <!-- mail icon -->
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 7.5C3 6.671 3.671 6 4.5 6h15c.829 0 1.5.671 1.5 1.5v9c0 .829-.671 1.5-1.5 1.5h-15A1.5 1.5 0 0 1 3 16.5v-9z" stroke="#2f6fa8" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M21 7.5l-9 6-9-6" stroke="#2f6fa8" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="meta">
+              <b>Gmail</b>
+              <small id="emailText">naldien901@gmail.com</small>
+              <div style="margin-top:6px">
+                <a class="ghost" href="mailto:naldien901@gmail.com">افتح الإيميل</a>
+                <button id="copyEmail" class="ghost" style="margin-left:8px">انسخ الإيميل</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- WhatsApp -->
+          <div class="contact-item">
+            <div class="icon" aria-hidden>
+              <!-- whatsapp icon -->
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 12.1c0 4.9-3.99 8.9-8.9 8.9-1.59 0-3.07-.42-4.35-1.16L3 21l1.31-4.73A8.872 8.872 0 0 1 2.1 12.1C2.1 7.2 6.09 3.2 11 3.2S19.9 7.2 19.9 12.1z" stroke="#2f6fa8" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M8.2 7.6c-.3.2-1 1-1 2.2 0 1.2.7 2.6 1.7 3.7.9 1 2.8 2.3 4.7 2.8 1 .2 1.7.1 2.4.1.6 0 1-.1 1.3-.2.4-.1.9-.4 1.1-.8.2-.3.2-.6.2-.9-.1-.9-.6-1.7-1-2.2-.7-1-1.5-1.7-2.2-2.2-.6-.4-1.1-.6-1.5-.7-.4-.1-.8 0-1.1.2-.3.2-.6.5-.9.9-.2.3-.5.6-.7.8-.4.4-.9.4-1.3.2-.4-.2-.9-.6-1.3-1.1-.2-.3-.4-.6-.5-1-.1-.3 0-.6.2-.9.2-.3.5-.4.9-.4.3 0 .6.1.9.3.4.2.7.5.9.8.2.3.4.6.6.9" stroke="#2f6fa8" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="meta">
+              <b>WhatsApp</b>
+              <small id="waText">+20 101 613 0198</small>
+              <div style="margin-top:6px">
+                <a class="ghost" id="waLink" href="https://wa.me/201016130198" target="_blank" rel="noopener">افتح المحادثة</a>
+                <button id="copyWA" class="ghost" style="margin-left:8px">انسخ رقم الواتساب</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Facebook -->
+          <div class="contact-item">
+            <div class="icon" aria-hidden>
+              <!-- fb icon -->
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M18 2.5h-3.2c-2.6 0-4.3 1.6-4.3 4.2V10.5H7.5v3.4h3v7.6h3.5v-7.6h2.8l.7-3.4h-3.5V7.2c0-.9.3-1.5 1.6-1.5H18V2.5z" stroke="#2f6fa8" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="meta">
+              <b>Facebook</b>
+              <small>صفحة / حساب</small>
+              <div style="margin-top:6px">
+                <a class="ghost" href="https://www.facebook.com/share/1JznTNos8D/" target="_blank" rel="noopener">زر الصفحة</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- LinkedIn -->
+          <div class="contact-item">
+            <div class="icon" aria-hidden>
+              <!-- linkedin icon -->
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4.5 8.9H8v11H4.5v-11zM6.2 5.6a1.9 1.9 0 1 0 0-3.8 1.9 1.9 0 0 0 0 3.8zM9.4 8.9h3.3v1.5h.05c.46-.88 1.59-1.8 3.27-1.8 3.5 0 4.15 2.3 4.15 5.3v6h-3.5v-5.3c0-1.26-.02-2.88-1.76-2.88-1.76 0-2.03 1.37-2.03 2.78v5.4h-3.5v-11z" stroke="#2f6fa8" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="meta">
+              <b>LinkedIn</b>
+              <small>Eng Nour Aldien</small>
+              <div style="margin-top:6px">
+                <a class="ghost" href="https://www.linkedin.com/in/eng-nour-aldien-mahmoud-581133372?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" target="_blank" rel="noopener">افتح الملف</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- X -->
+          <div class="contact-item">
+            <div class="icon" aria-hidden>
+              <!-- x icon -->
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M19 5L12 12M5 19L12 12M5 5l14 14" stroke="#2f6fa8" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="meta">
+              <b>X (Twitter)</b>
+              <small>@nour98760</small>
+              <div style="margin-top:6px">
+                <a class="ghost" href="https://x.com/nour98760?t=MD_ephKnDJc2FQxQCc0rTQ&s=09" target="_blank" rel="noopener">افتح الحساب</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Instagram -->
+          <div class="contact-item">
+            <div class="icon" aria-hidden>
+              <!-- insta icon -->
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="3" width="18" height="18" rx="5" stroke="#2f6fa8" stroke-width="1.2"/><path d="M12 8.2a3.8 3.8 0 1 0 0 7.6 3.8 3.8 0 0 0 0-7.6z" stroke="#2f6fa8" stroke-width="1.2"/><path d="M17.5 6.5h.01" stroke="#2f6fa8" stroke-width="1.2" stroke-linecap="round"/></svg>
+            </div>
+            <div class="meta">
+              <b>Instagram</b>
+              <small>@xx_nouraldien_xx</small>
+              <div style="margin-top:6px">
+                <a class="ghost" href="https://www.instagram.com/xx_nouraldien_xx?igsh=NHZ2ZHp2ejFibjV6" target="_blank" rel="noopener">افتح الإنستجرام</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <p class="note">ملاحظة: الروابط تفتح في تبويب جديد. .</p>
+      </section>
+
+      <!-- Right: contact form -->
+      <aside class="card" aria-labelledby="formTitle">
+        <h2 id="formTitle">ابعتلنا رسالة</h2>
+        <p class="note">اكتب رسالتك هنا — النموذج سيفتح تطبيق البريد أو يحفظ نسخة محليًا (للاستخدام أثناء العرض).</p>
+
+        <form id="contactForm">
+          <label for="name">الاسم</label>
+          <input id="name" type="text" placeholder="اسمك" required>
+
+          <label for="fromEmail">بريدك الإلكتروني</label>
+          <input id="fromEmail" type="email" placeholder="example@mail.com" required>
+
+          <label for="subject">الموضوع</label>
+          <input id="subject" type="text" placeholder="موضوع الرسالة" required>
+
+          <label for="message">الرسالة</label>
+          <textarea id="message" rows="6" placeholder="اكتب رسالتك هنا..." required></textarea>
+
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button type="submit">أرسل عبر الإيميل</button>
+            <button type="button" id="saveLocal" class="ghost">احفظ نسخة محليًا</button>
+          </div>
+        </form>
+
+        <div class="note" style="margin-top:12px">
+         .
+        </div>
+      </aside>
+    </div>
+
+    <footer style="margin-top:18px;text-align:center;color:var(--muted)">
+      <div>Developed by : Eng Nour Aldien , Eng Mickel Ayman</div>
+      <div style="font-size:13px;margin-top:6px">© StudentWell — دعم الطلاب للرفاهية النفسية</div>
+    </footer>
+  </main>
+
+  <script>
+    // Helper: copy to clipboard with toast
+    function copyToClipboard(text){
+      navigator.clipboard?.writeText(text).then(()=>{
+        alert('تم النسخ إلى الحافظة: ' + text);
+      }).catch(()=>{ prompt('انسخ النص يدويًا:', text); });
+    }
+
+    document.getElementById('copyEmail').addEventListener('click', ()=> copyToClipboard('naldien901@gmail.com'));
+    document.getElementById('copyWA').addEventListener('click', ()=> copyToClipboard('+201016130198'));
+
+    // WhatsApp link already set; we also ensure it opens correctly
+    document.getElementById('waLink').addEventListener('click', (e)=>{
+      // allow normal open in new tab
+    });
+
+    // Contact form: open mailto and save local copy
+    const form = document.getElementById('contactForm');
+    form.addEventListener('submit', (e)=>{
+      e.preventDefault();
+      const name = document.getElementById('name').value.trim();
+      const from = document.getElementById('fromEmail').value.trim();
+      const subject = document.getElementById('subject').value.trim();
+      const msg = document.getElementById('message').value.trim();
+      if(!name || !from || !subject || !msg) return alert('من فضلك املأ كل الحقول.');
+
+      // build mailto
+      const to = 'naldien901@gmail.com';
+      const body = encodeURIComponent(`الاسم: ${name}\nالبريد: ${from}\n\n${msg}`);
+      const mailto = `mailto:${to}?subject=${encodeURIComponent(subject)}&body=${body}`;
+      // Save a local copy to localStorage for العرض
+      const storeKey = 'studentwell_contact_messages_v1';
+      const arr = JSON.parse(localStorage.getItem(storeKey) || '[]');
+      arr.push({t: Date.now(), name, from, subject, msg});
+      localStorage.setItem(storeKey, JSON.stringify(arr));
+      // open mail client
+      window.location.href = mailto;
+    });
+
+    // Save local copy button
+    document.getElementById('saveLocal').addEventListener('click', ()=>{
+      const name = document.getElementById('name').value.trim();
+      const from = document.getElementById('fromEmail').value.trim();
+      const subject = document.getElementById('subject').value.trim();
+      const msg = document.getElementById('message').value.trim();
+      if(!name || !from || !subject || !msg) return alert('من فضلك املأ كل الحقول قبل الحفظ.');
+      const storeKey = 'studentwell_contact_messages_v1';
+      const arr = JSON.parse(localStorage.getItem(storeKey) || '[]');
+      arr.push({t: Date.now(), name, from, subject, msg});
+      localStorage.setItem(storeKey, JSON.stringify(arr));
+      alert('تم حفظ نسخة محليًا.');
+    });
+
+    // optional: expose function to read saved messages (useful للعرض)
+    window._studentwell_getSavedMessages = function(){
+      return JSON.parse(localStorage.getItem('studentwell_contact_messages_v1') || '[]');
+    };
+  </script>
+<script src="site-nav.js"></script>
+<script src="nav-scroll.js"></script>
+</body>
+</html>

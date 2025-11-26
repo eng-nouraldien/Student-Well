@@ -1,0 +1,484 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <link rel="stylesheet" href="styles.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>StudentWell — مكتبة موارد (محدثة)</title>
+  <style>
+    :root{
+      --bg:#f3f7fb;
+      --card:#fff;
+      --accent:#2f6fa8;
+      --accent-2:#4aa3d8;
+      --muted:#5b6570;
+      --success:#16a34a;
+      --danger:#dc2626;
+      font-family: 'Segoe UI', Tahoma, system-ui, 'Noto Kufi Arabic', Arial, sans-serif;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:linear-gradient(180deg,var(--bg),#eef6fb);color:#0f172a}
+    header{padding:18px;text-align:center}
+    .brand{display:inline-block;background:var(--card);padding:12px 18px;border-radius:12px;box-shadow:0 8px 24px rgba(19,38,71,0.06)}
+    .brand h1{margin:0;color:var(--accent)}
+    .lead{color:var(--muted);margin-top:6px}
+
+    .container{max-width:1100px;margin:20px auto;padding:0 16px}
+    .controls{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:12px 0}
+    .search{flex:1;display:flex;gap:8px}
+    input[type=text], select, textarea {padding:10px;border-radius:10px;border:1px solid #e6eefc;font-size:15px}
+    button{padding:9px 12px;border-radius:10px;border:0;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white;cursor:pointer;font-weight:700}
+    .btn-ghost{background:transparent;border:1px solid rgba(47,111,168,0.12);color:var(--accent);padding:8px 10px;border-radius:10px}
+
+    .grid{display:grid;grid-template-columns:1fr 340px;gap:18px}
+    .card{background:var(--card);border-radius:12px;padding:14px;box-shadow:0 10px 30px rgba(19,38,71,0.05)}
+    .resources-list{display:grid;gap:12px}
+    .res-item{display:flex;gap:12px;align-items:flex-start;padding:12px;border-radius:10px;border:1px solid #f0f6fb}
+    .res-thumb{width:96px;height:64px;border-radius:8px;object-fit:cover;background:#eaf5ff;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:var(--accent);font-weight:800}
+    .res-body{flex:1}
+    .res-title{font-weight:800;color:var(--accent);margin:0 0 6px}
+    .res-desc{margin:0;color:var(--muted);font-size:14px}
+    .res-meta{margin-top:8px;font-size:13px;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+    .tag{display:inline-block;background:#f1f8ff;color:var(--accent);padding:6px 8px;border-radius:999px;font-size:12px}
+
+    .sidebar-section{margin-bottom:12px}
+    .fav-list{max-height:300px;overflow:auto}
+    .fav-item{padding:8px;border-radius:8px;border:1px solid #f0f6fb;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+
+    .video-preview iframe{width:100%;height:220px;border-radius:8px;border:0}
+
+    @media (max-width:900px){ .grid{grid-template-columns:1fr} .video-preview iframe{height:180px} }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <h1>مكتبة موارد — StudentWell</h1>
+      <div class="lead">مقالات، فيديوهات، وملفات مفيدة لدعم الصحة النفسية والرفاهية.</div>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="controls">
+      <div class="search">
+        <input id="searchInput" type="text" placeholder="ابحث عن مقالة، فيديو، أو كلمة مفتاحية..." aria-label="بحث">
+        <select id="filterType" aria-label="نوع المورد">
+          <option value="all">كل الأنواع</option>
+          <option value="article">مقال</option>
+          <option value="video">فيديو</option>
+          <option value="pdf">ملف PDF</option>
+          <option value="tool">أداة</option>
+        </select>
+        <button id="searchBtn">بحث</button>
+      </div>
+
+      <div style="margin-left:auto;display:flex;gap:8px">
+        <button id="showAdd" class="btn-ghost">أضف مورد جديد</button>
+        <a href="index.html" class="btn-ghost">العودة للرئيسية</a>
+      </div>
+    </div>
+
+    <div class="grid">
+      <!-- Main column: resources -->
+      <section>
+        <div class="card">
+          <h2 style="margin-top:0">المصادر</h2>
+          <div id="resources" class="resources-list" aria-live="polite">
+            <!-- موارد ستظهر هنا برمجياً -->
+          </div>
+
+          <div style="margin-top:12px;display:flex;gap:8px;align-items:center">
+            <button id="loadDefaults" class="btn-ghost">تحميل مصادر موثوقة</button>
+            <button id="clearAll" class="btn-ghost">مسح كل الموارد (محلي)</button>
+            <div style="margin-left:auto;color:var(--muted);font-size:13px">المصادر تحفظ محليًا على جهازك</div>
+          </div>
+        </div>
+
+        <!-- Add new resource form (hidden by default) -->
+        <div id="addFormWrap" class="card" style="margin-top:12px;display:none">
+          <h3>أضف مورد جديد</h3>
+          <div style="display:grid;gap:8px">
+            <input id="title" placeholder="عنوان المورد (مثال: نصائح للنوم)" />
+            <input id="url" placeholder="رابط المورد أو رابط الملف (مثال: رابط يوتيوب أو pdf)" />
+            <select id="type">
+              <option value="article">مقال</option>
+              <option value="video">فيديو</option>
+              <option value="pdf">pdf</option>
+              <option value="tool">أداة</option>
+            </select>
+            <input id="thumb" placeholder="رابط صورة مصغرة (اختياري)" />
+            <input id="tags" placeholder="كلمات مفتاحية مفصولة بفاصلة (مثال: نوم,قلق,تركيز)" />
+            <textarea id="desc" rows="3" placeholder="وصف قصير"></textarea>
+            <div style="display:flex;gap:8px">
+              <button id="addResourceBtn">إضافة المورد</button>
+              <button id="cancelAdd" class="btn-ghost">إلغاء</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Sidebar: favorites + video preview -->
+      <aside>
+        <div class="card sidebar-section">
+          <h3 style="margin:0 0 8px">المفضلات</h3>
+          <div id="favList" class="fav-list">
+            <!-- عناصر المفضلات -->
+          </div>
+        </div>
+
+        <div class="card sidebar-section video-preview" id="videoPreview">
+          <h3 style="margin:0 0 8px">معاينة فيديو</h3>
+          <div id="videoArea" style="color:var(--muted)">اختَر فيديو من القائمة لمعاينته هنا.</div>
+        </div>
+
+        <div class="card sidebar-section">
+          <h4 style="margin:0 0 8px">مصادر موثوقة سريعة</h4>
+          <ul style="padding-left:16px;color:var(--muted);margin:0">
+            <li>World Health Organization (WHO) — Mental health overview</li>
+            <li>American Psychological Association (APA) — Stress & coping</li>
+            <li>National Institute of Mental Health (NIMH)</li>
+            <li>NHS — Five Steps to Mental Wellbeing</li>
+            <li>Mind, YoungMinds — موارد ودعم للشباب</li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <script>
+    // موارد موثوقة مملوءة بروابط حقيقية
+    const DEFAULT_RESOURCES = [
+      // Authoritative org pages
+      {
+        id: 'r_who_mental',
+        title: 'WHO — Mental health overview',
+        url: 'https://www.who.int/health-topics/mental-health',
+        type: 'article',
+        thumb: '',
+        tags: ['WHO','رفاهية','معلومات'],
+        desc: 'لمحة عامة من منظمة الصحة العالمية عن الصحة النفسية ومواردها.'
+      },
+      {
+        id: 'r_apa_stress',
+        title: 'APA — Stress (topics & coping tools)',
+        url: 'https://www.apa.org/topics/stress',
+        type: 'article',
+        thumb: '',
+        tags: ['APA','توتر','استراتيجيات'],
+        desc: 'مقالات وأدوات عملية من الجمعية الأمريكية لعلم النفس لإدارة التوتر.'
+      },
+      {
+        id: 'r_nimh',
+        title: 'NIMH — Mental Health Information',
+        url: 'https://www.nimh.nih.gov/health',
+        type: 'article',
+        thumb: '',
+        tags: ['NIMH','معلومات','أبحاث'],
+        desc: 'معلومات وأدلة علمية من المعهد الوطني للصحة النفسية (الولايات المتحدة).'
+      },
+      {
+        id: 'r_nhs_wellbeing',
+        title: 'NHS — Five steps to mental wellbeing',
+        url: 'https://www.nhs.uk/mental-health/self-help/guides-tools-and-activities/five-steps-to-mental-wellbeing/',
+        type: 'article',
+        thumb: '',
+        tags: ['NHS','رفاهية','نصائح'],
+        desc: 'خمس خطوات عملية تساعد على تحسين الصحة النفسية اليومية (NHS).'
+      },
+      {
+        id: 'r_mind',
+        title: 'Mind (UK) — Mental health charity resources',
+        url: 'https://www.mind.org.uk/',
+        type: 'article',
+        thumb: '',
+        tags: ['Mind','دعم','منظمة'],
+        desc: 'جمعية خيرية بريطانية تقدم موارد ودعماً عملياً للمشكلات النفسية.'
+      },
+
+      // Helpful guides / PDFs
+      {
+        id: 'r_nhs_every_mind',
+        title: 'NHS — Every Mind Matters (Mind Plan)',
+        url: 'https://www.nhs.uk/every-mind-matters/',
+        type: 'tool',
+        thumb: '',
+        tags: ['NHS','أداة','نصائح'],
+        desc: 'أداة تفاعلية من NHS لصنع خطة شخصية للرفاهية النفسية.'
+      },
+
+      // TED talks (use stable ted.com links)
+      {
+        id: 'r_guy_winch_ted',
+        title: 'TED — Why we all need to practice emotional first aid (Guy Winch)',
+        url: 'https://www.ted.com/talks/guy_winch_why_we_all_need_to_practice_emotional_first_aid',
+        type: 'video',
+        thumb: '',
+        tags: ['TED','emotional first aid','Guy Winch'],
+        desc: 'توكيد أهمية العناية بالعافية العاطفية — نصائح عملية معتمدة علمياً.'
+      },
+      {
+        id: 'r_brene_vulnerability',
+        title: 'TED — The power of vulnerability (Brené Brown)',
+        url: 'https://www.ted.com/talks/brene_brown_the_power_of_vulnerability',
+        type: 'video',
+        thumb: '',
+        tags: ['TED','vulnerability','Brené Brown'],
+        desc: 'حديث مشهور عن الارتباط، الشجاعة، والضعف العاطفي وتأثيره على الصحة النفسية.'
+      },
+
+      // YouTube guided practices (embed links)
+      {
+        id: 'r_box_breathing',
+        title: 'Box Breathing — 5 Minute Guided (YouTube)',
+        url: 'https://www.youtube.com/embed/aPYmZOhJF5Q',
+        type: 'video',
+        thumb: '',
+        tags: ['تنفس','استرخاء','تمارين'],
+        desc: 'فيديو موجّه لتمرين تصفية وتهدئة الجهاز العصبي (box/4-4-4 breathing).'
+      },
+      {
+        id: 'r_tactical_breathing',
+        title: 'Tactical Breathing / 4-4-4 (YouTube)',
+        url: 'https://www.youtube.com/embed/GViVk4RVJYE',
+        type: 'video',
+        thumb: '',
+        tags: ['تنفس','تقنيات','ضغط'],
+        desc: 'شرح سريع لتقنية التنفس التكتيكي لخفض القلق والضغط.'
+      },
+      {
+        id: 'r_mindful_meditation',
+        title: 'Guided Mindfulness Meditation — 10 minutes (YouTube)',
+        url: 'https://www.youtube.com/embed/6p_yaNFSYao',
+        type: 'video',
+        thumb: '',
+        tags: ['تأمل','mindfulness','استرخاء'],
+        desc: 'جلسة تأمل قصيرة مناسبة للمبتدئين لتحسين التركيز والهدوء.'
+      },
+
+      // Youth / student-focused
+      {
+        id: 'r_youngminds',
+        title: 'YoungMinds — Support for young people',
+        url: 'https://www.youngminds.org.uk/',
+        type: 'article',
+        thumb: '',
+        tags: ['youth','support','YoungMinds'],
+        desc: 'منظمة موجهة لدعم الصحة النفسية للأطفال والشباب وأسرهم.'
+      },
+
+      // Extra practical PDFs/tools (examples)
+      {
+        id: 'r_stress_guide_pdf',
+        title: 'PDF — Student stress management guide (example)',
+        url: 'https://www.apa.org/topics/stress/manage-stress-tools', // APA tools page (not pdf) — user can download resources from هنا
+        type: 'pdf',
+        thumb: '',
+        tags: ['ملف','استراتيجيات','طلاب'],
+        desc: 'صفحة أدوات إدارة التوتر (APA) — تحوي روابط لمطبوعات ودلائل عملية.'
+      }
+    ];
+
+    // مفاتيح التخزين المحلي
+    const KEY = 'studentwell_resources_v1';
+    const FAV_KEY = 'studentwell_resources_favs_v1';
+
+    // عناصر DOM
+    const resourcesEl = document.getElementById('resources');
+    const favListEl = document.getElementById('favList');
+    const loadDefaultsBtn = document.getElementById('loadDefaults');
+    const clearAllBtn = document.getElementById('clearAll');
+    const searchInput = document.getElementById('searchInput');
+    const filterType = document.getElementById('filterType');
+    const searchBtn = document.getElementById('searchBtn');
+    const showAddBtn = document.getElementById('showAdd');
+    const addFormWrap = document.getElementById('addFormWrap');
+    const addResourceBtn = document.getElementById('addResourceBtn');
+    const cancelAdd = document.getElementById('cancelAdd');
+
+    // Helper: get stored resources
+    function loadResources(){
+      try { return JSON.parse(localStorage.getItem(KEY) || '[]'); }
+      catch(e){ return []; }
+    }
+    function saveResources(arr){ localStorage.setItem(KEY, JSON.stringify(arr)); }
+
+    function loadFavs(){ try { return JSON.parse(localStorage.getItem(FAV_KEY) || '[]'); } catch(e){ return []; } }
+    function saveFavs(arr){ localStorage.setItem(FAV_KEY, JSON.stringify(arr)); }
+
+    // Render resources list
+    function renderResources(list){
+      resourcesEl.innerHTML = '';
+      if(list.length === 0) { resourcesEl.innerHTML = '<div style="color:var(--muted)">لا توجد موارد مطابقة.</div>'; return; }
+      list.forEach(r => {
+        const div = document.createElement('div');
+        div.className = 'res-item';
+        div.innerHTML = `
+          <div class="res-thumb">${r.thumb ? `<img src="${r.thumb}" alt="" style="width:96px;height:64px;border-radius:8px;object-fit:cover">` : '<div style="padding:6px;text-align:center">IMG</div>'}</div>
+          <div class="res-body">
+            <div class="res-title">${escapeHtml(r.title)}</div>
+            <div class="res-desc">${escapeHtml(r.desc || '')}</div>
+            <div class="res-meta">
+              <div>النوع: <span class="tag">${r.type}</span></div>
+              ${r.tags && r.tags.length ? r.tags.map(t=>`<div class="tag">${escapeHtml(t.trim())}</div>`).join('') : ''}
+              <div style="margin-left:auto">
+                <button class="btn-ghost" data-action="open" data-id="${r.id}">افتح</button>
+                <button class="btn-ghost" data-action="fav" data-id="${r.id}">☆</button>
+                ${r.type === 'pdf' ? `<a class="btn-ghost" href="${r.url}" target="_blank" download>تحميل</a>` : ''}
+              </div>
+            </div>
+          </div>
+        `;
+        // attach handlers
+        div.querySelectorAll('button[data-action]').forEach(b=>{
+          b.addEventListener('click', ()=> {
+            const action = b.getAttribute('data-action');
+            const id = b.getAttribute('data-id');
+            const item = getResourceById(id);
+            if(action === 'open') openResource(item);
+            if(action === 'fav') toggleFav(item);
+          });
+        });
+        resourcesEl.appendChild(div);
+      });
+    }
+
+    function getResourceById(id){
+      return loadResources().find(r=>r.id === id) || DEFAULT_RESOURCES.find(r=>r.id === id);
+    }
+
+    // Open / preview a resource
+    function openResource(r){
+      if(!r) return;
+      if(r.type === 'video'){
+        const videoArea = document.getElementById('videoArea');
+        // if embed link (youtube embed) use iframe; if not, open new tab
+        if(r.url.includes('youtube.com/embed') || r.url.includes('player.vimeo') || r.url.includes('youtube-nocookie')){
+          videoArea.innerHTML = `<iframe src="${r.url}" title="${escapeHtml(r.title)}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+          window.scrollTo({top:0,behavior:'smooth'});
+        } else {
+          window.open(r.url, '_blank');
+        }
+      } else if(r.type === 'pdf' || r.type === 'article' || r.type === 'tool'){
+        window.open(r.url, '_blank');
+      }
+    }
+
+    // Favorites
+    function renderFavs(){
+      const favs = loadFavs();
+      favListEl.innerHTML = '';
+      if(favs.length === 0) { favListEl.innerHTML = '<div style="color:var(--muted)">لا توجد مفضلات بعد.</div>'; return; }
+      favs.forEach(id=>{
+        const r = getResourceById(id);
+        if(!r) return;
+        const div = document.createElement('div');
+        div.className = 'fav-item';
+        div.innerHTML = `<div style="font-weight:700;color:var(--accent)">${escapeHtml(r.title)}</div><div><button class="btn-ghost" data-action="open" data-id="${r.id}">افتح</button> <button class="btn-ghost" data-action="remove" data-id="${r.id}">إزالة</button></div>`;
+        div.querySelector('[data-action="open"]').addEventListener('click', ()=> openResource(r));
+        div.querySelector('[data-action="remove"]').addEventListener('click', ()=>{
+          const newFavs = loadFavs().filter(x=>x!==r.id);
+          saveFavs(newFavs);
+          renderFavs();
+        });
+        favListEl.appendChild(div);
+      });
+    }
+
+    function toggleFav(r){
+      const favs = loadFavs();
+      if(favs.includes(r.id)){
+        const newFavs = favs.filter(x=>x !== r.id);
+        saveFavs(newFavs);
+      } else {
+        favs.push(r.id);
+        saveFavs(favs);
+      }
+      renderFavs();
+    }
+
+    // Utilities: escape HTML
+    function escapeHtml(s){ if(!s) return ''; return String(s).replace(/[&<>"']/g, c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[c]); }
+
+    // Search / filter
+    function searchResources(){
+      const q = (searchInput.value || '').trim().toLowerCase();
+      const type = filterType.value;
+      let list = loadResources();
+      // include defaults (merge) if empty
+      if(list.length === 0) list = DEFAULT_RESOURCES.slice();
+      if(type && type !== 'all') list = list.filter(r=> r.type === type);
+      if(q) {
+        list = list.filter(r => (r.title + ' ' + (r.desc||'') + ' ' + (r.tags||[]).join(' ')).toLowerCase().includes(q));
+      }
+      renderResources(list);
+    }
+
+    // Load default resources (merge with existing, avoid duplicates)
+    loadDefaultsBtn.addEventListener('click', ()=>{
+      const current = loadResources();
+      const merged = current.slice();
+      DEFAULT_RESOURCES.forEach(d=>{
+        if(!merged.find(c=>c.id === d.id)) merged.push(d);
+      });
+      saveResources(merged);
+      renderResources(merged);
+      renderFavs();
+    });
+
+    // Clear all resources
+    clearAllBtn.addEventListener('click', ()=>{
+      if(!confirm('مسح كل الموارد من التخزين المحلي؟')) return;
+      localStorage.removeItem(KEY);
+      renderResources([]);
+      renderFavs();
+    });
+
+    // Show add form
+    showAddBtn.addEventListener('click', ()=> {
+      addFormWrap.style.display = addFormWrap.style.display === 'none' ? 'block' : 'none';
+    });
+    cancelAdd.addEventListener('click', ()=> { addFormWrap.style.display = 'none'; });
+
+    // Add new resource
+    addResourceBtn.addEventListener('click', ()=>{
+      const t = document.getElementById('title').value.trim();
+      const url = document.getElementById('url').value.trim();
+      const type = document.getElementById('type').value;
+      const thumb = document.getElementById('thumb').value.trim();
+      const tags = (document.getElementById('tags').value || '').split(',').map(x=>x.trim()).filter(Boolean);
+      const desc = document.getElementById('desc').value.trim();
+      if(!t || !url) return alert('ادخل على الأقل عنوان ورابط للمورد.');
+      const arr = loadResources();
+      const obj = { id: 'r_' + Date.now().toString(36), title: t, url, type, thumb, tags, desc };
+      arr.push(obj);
+      saveResources(arr);
+      renderResources(arr);
+      document.getElementById('title').value = '';
+      document.getElementById('url').value = '';
+      document.getElementById('thumb').value = '';
+      document.getElementById('tags').value = '';
+      document.getElementById('desc').value = '';
+      addFormWrap.style.display = 'none';
+      alert('تمت إضافة المورد.');
+    });
+
+    // Open logic for resource (directed by button)
+    searchBtn.addEventListener('click', searchResources);
+    searchInput.addEventListener('keydown', e=> { if(e.key === 'Enter') searchResources(); });
+
+    // Initial load: if no saved resources show defaults preview (but don't override)
+    (function init(){
+      const data = loadResources();
+      if(data.length === 0) {
+        renderResources(DEFAULT_RESOURCES);
+      } else {
+        renderResources(data);
+      }
+      renderFavs();
+    })();
+  </script>
+<script src="site-nav.js"></script>
+<script src="nav-scroll.js"></script>
+</body>
+</html>
+
